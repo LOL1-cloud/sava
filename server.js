@@ -14,10 +14,10 @@ const SECRET = 'trace_secret_key';
 
 // Отдаём HTML файлы
 app.get('/', (req, res) => {
-    res.sendFile('/Users/user/Desktop/Sava/index.html');
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 app.get('/:page', (req, res) => {
-    res.sendFile('/Users/user/Desktop/Sava/' + req.params.page);
+    res.sendFile(path.join(__dirname, req.params.page));
 });
 
 // Загруженные файлы
