@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Услуги — Trace Design</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        .hero-bg { 
+            background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), 
+                        url('https://trace-design.ru/wp-content/uploads/1776945284899-019dba30-ae28-7997-8f96-bdbd61512615.webp') center/cover no-repeat; 
+        }
+        .tail-container { max-width: 1280px; margin: 0 auto; }
+        .service-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .service-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.15);
+        }
+        .accent-text { color: #A68A64; }
+    </style>
+</head>
+<body class="bg-[#F5F0E8] text-[#3F2A1E] font-light">
+
+    <!-- HEADER -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="tail-container px-6 py-5 flex justify-between items-center">
+            <a href="index.html" class="text-3xl tracking-widest font-serif">TRACE</a>
+            
+            <nav class="hidden md:flex items-center gap-10 text-sm uppercase tracking-widest">
+                <a href="index.html" class="hover:text-[#A68A64] transition">Главная</a>
+                <a href="about.html" class="hover:text-[#A68A64] transition">О нас</a>
+                <a href="portfolio.html" class="hover:text-[#A68A64] transition">Портфолио</a>
+                <a href="news.html" class="hover:text-[#A68A64] transition">Новости</a>
+                <a href="cabinet.html" class="hover:text-[#A68A64] transition">Кабинет</a>
+                <a href="services.html" class="hover:text-[#A68A64] transition">Услуги</a>
+                <button onclick="openContactModal()" 
+                        class="bg-[#3F2A1E] text-white px-8 py-3.5 text-xs tracking-widest hover:bg-[#A68A64] transition">
+                    НАПИСАТЬ НАМ
+                </button>
+            </nav>
+
+            <button onclick="toggleMobileMenu()" class="md:hidden text-2xl">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero-bg h-screen flex items-center text-white">
+        <div class="tail-container px-6 max-w-3xl">
+            <h1 class="text-6xl md:text-7xl font-serif leading-tight mb-6">Услуги</h1>
+            <p class="text-2xl opacity-90">Выбирайте пакет, который соответствует вашим задачам и бюджету.<br>Мы адаптируем процесс под вас.</p>
+            <div class="mt-10">
+                <a href="#packages" 
+                   class="inline-block bg-white text-[#3F2A1E] px-10 py-4 text-sm uppercase tracking-widest hover:bg-[#A68A64] hover:text-white transition">
+                    Выбрать пакет
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ПАКЕТЫ УСЛУГ -->
+    <section id="packages" class="py-24 bg-white">
+        <div class="tail-container px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl font-serif mb-4">Пакеты дизайн-проектов</h2>
+                <p class="text-[#A68A64] text-lg max-w-2xl mx-auto">
+                    От эскизного решения до полного проекта с 3D-визуализацией и авторского надзора
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="services-grid">
+                <!-- Заполняется через JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ -->
+    <section class="py-24 bg-[#F5F0E8]">
+        <div class="tail-container px-6 max-w-4xl mx-auto text-center">
+            <h3 class="text-4xl font-serif mb-8">Какой пакет выбрать?</h3>
+            <p class="text-lg leading-relaxed text-[#3F2A1E]/80">
+                Независимо от выбранного пакета, мы выстраиваем работу так, чтобы вы могли начать ремонт уже через 2–3 недели после утверждения концепции. 
+                Каждый проект включает обмерный план, рабочую документацию и подробную смету.
+            </p>
+        </div>
+    </section>
+
+    <footer class="bg-[#3F2A1E] text-white py-16">
+        <div class="tail-container px-6 text-center">
+            <p class="text-[#A68A64] mb-2">© 2026 Trace Design</p>
+            <p class="text-sm opacity-60">Премиальный дизайн интерьеров • Москва</p>
+        </div>
+    </footer>
+
+    <!-- МОДАЛЬНОЕ ОКНО УСЛУГИ -->
+    <div id="serviceModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-[100] p-4">
+        <div class="bg-white max-w-3xl w-full max-h-[92vh] overflow-auto rounded-2xl">
+            <div class="p-10">
+                <div class="flex justify-between items-start mb-8">
+                    <div>
+                        <h3 id="modalTitle" class="text-4xl font-serif"></h3>
+                        <p id="modalPrice" class="text-2xl accent-text mt-2"></p>
+                    </div>
+                    <button onclick="closeServiceModal()" class="text-4xl leading-none hover:text-[#A68A64]">×</button>
+                </div>
+                
+                <p id="modalDescription" class="text-lg leading-relaxed mb-10"></p>
+                
+                <h4 class="uppercase tracking-widest text-sm mb-4 text-[#A68A64]">Что входит в пакет</h4>
+                <ul id="modalFeatures" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-12"></ul>
+
+                <div class="bg-[#F5F0E8] p-8 rounded-2xl">
+                    <p class="text-center text-sm uppercase tracking-widest mb-4">Готовы обсудить ваш проект?</p>
+                    <div class="flex justify-center gap-4">
+                        <button onclick="closeServiceModal();openContactModal()" 
+                                class="bg-[#3F2A1E] text-white px-10 py-4 text-sm uppercase tracking-widest hover:bg-[#A68A64] transition">
+                            Обсудить проект
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО "НАПИСАТЬ НАМ" (из index.html) -->
+    <div id="contactModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-[110]">
+        <div class="bg-white max-w-lg w-full mx-4 p-10">
+            <h3 class="text-3xl font-serif mb-8">Расскажите о вашем проекте</h3>
+            <form onsubmit="submitApplication(event)" class="space-y-6">
+                <input id="name" type="text" placeholder="ФИО" required class="w-full border-b py-4 focus:outline-none">
+                <input id="phone" type="tel" placeholder="Телефон" required class="w-full border-b py-4 focus:outline-none">
+                <input id="area2" type="number" placeholder="Площадь объекта (м²)" required class="w-full border-b py-4 focus:outline-none">
+                <select id="objType" class="w-full border-b py-4 focus:outline-none">
+                    <option value="">Тип объекта</option>
+                    <option>Квартира</option>
+                    <option>Дом</option>
+                    <option>Офис</option>
+                </select>
+                <button type="submit" class="w-full bg-[#3F2A1E] text-white py-5 text-sm tracking-widest hover:bg-[#A68A64]">
+                    ОТПРАВИТЬ ЗАЯВКУ
+                </button>
+            </form>
+            <button onclick="closeContactModal()" class="absolute top-6 right-6 text-4xl">×</button>
+        </div>
+    </div>
+
+    <script>
+        tailwind.config = { content: [], theme: { extend: {} } }
+
+        const services = [
+            {
+                id: "full-3d",
+                title: "Полный дизайн-проект с 3D-визуализацией",
+                price: "9300 ₽/м²",
+                time: "3 месяца",
+                description: "Данный проект помогает закрывать потребности в полной мере как клиентам, так и строителям. В нем заложены все ответы на актуальные вопросы мастеров. Он помогает погрузиться в интерьер своей мечты до начала ремонта.",
+                features: [
+                    "План обмерный",
+                    "План демонтируемых и монтируемых перегородок",
+                    "План размещения и привязки мебели",
+                    "План потолочных и напольных покрытий",
+                    "План освещения, выключателей и электрооборудования",
+                    "План инсталляции водоприборов",
+                    "Развертки стен всех помещений",
+                    "Комплексная 3D-визуализация",
+                    "Смета на дизайн-проект"
+                ]
+            },
+            {
+                id: "collage",
+                title: "Дизайн-проект с коллажами",
+                price: "8000 ₽/м²",
+                time: "2,5 месяца",
+                description: "Проект намеренно упрощён в визуальной части, но не теряет своей актуальности в строительной сфере. Скорость реализации и цена — главные преимущества этого пакета.",
+                features: [
+                    "План обмерный",
+                    "План демонтируемых и монтируемых перегородок",
+                    "План размещения и привязки мебели",
+                    "План потолочных и напольных покрытий",
+                    "План освещения и электрооборудования",
+                    "План инсталляции водоприборов",
+                    "Развертки стен",
+                    "Коллажи вместо полноценной 3D-визуализации",
+                    "Смета на дизайн-проект"
+                ]
+            },
+            {
+                id: "sketch",
+                title: "Эскизный дизайн-проект",
+                price: "6500 ₽/м²",
+                time: "4 недели",
+                description: "Идеальное решение для тех, кто хочет быстро увидеть, как будет выглядеть мебель и декор в пространстве, и дать строителям чёткие ориентиры.",
+                features: [
+                    "План обмерный",
+                    "План размещения и привязки мебели",
+                    "3D-визуализация всех помещений",
+                    "Развертки стен всех помещений",
+                    "Смета на дизайн-проект"
+                ]
+            },
+            {
+                id: "technical",
+                title: "Технический дизайн-проект",
+                price: "5000 ₽/м²",
+                time: "1,5 месяца",
+                description: "Создан для клиентов, которые не готовы тратить большие суммы на визуальную часть проекта и хотят оставить пространство для собственного творчества и выбора материалов.",
+                features: [
+                    "План обмерный",
+                    "План демонтируемых и монтируемых перегородок",
+                    "План размещения и привязки мебели",
+                    "План потолочных и напольных покрытий",
+                    "План освещения, выключателей и розеток",
+                    "План инсталляции водоприборов",
+                    "Развертки стен",
+                    "Смета на дизайн-проект"
+                ]
+            },
+            {
+                id: "supervision",
+                title: "Авторский надзор",
+                price: "от 45 000 ₽ / месяц",
+                time: "в течение всего ремонта",
+                description: "Профессиональный контроль за реализацией утверждённого дизайн-проекта. Дизайнер следит за точным соблюдением всех чертежей, качеством работ и материалов, оперативно решает возникающие вопросы на объекте.",
+                features: [
+                    "Регулярные выезды на объект (2–4 раза в месяц)",
+                    "Контроль соответствия работ проектной документации",
+                    "Корректировка чертежей при необходимости",
+                    "Консультации строителей по сложным узлам",
+                    "Приёмка скрытых работ",
+                    "Фиксация этапов ремонта (фото/видео)",
+                    "Помощь в подборе подрядчиков и материалов"
+                ]
+            }
+        ];
+
+        function renderServices() {
+            const container = document.getElementById('services-grid');
+            container.innerHTML = services.map(service => `
+                <div onclick="showService('${service.id}')" 
+                     class="service-card bg-white border border-[#3F2A1E]/10 rounded-3xl p-8 cursor-pointer group">
+                    <div class="flex justify-between items-start mb-6">
+                        <h3 class="text-2xl font-serif leading-tight">${service.title}</h3>
+                    </div>
+                    <div class="mb-6">
+                        <span class="text-4xl font-serif accent-text">${service.price}</span>
+                        <span class="block text-sm text-[#A68A64] mt-1">${service.time}</span>
+                    </div>
+                    <p class="text-[#3F2A1E]/70 line-clamp-3 mb-8">${service.description}</p>
+                    <button class="text-sm uppercase tracking-widest border border-[#3F2A1E] px-8 py-3.5 group-hover:bg-[#3F2A1E] group-hover:text-white transition">
+                        Подробнее
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function showService(id) {
+            const service = services.find(s => s.id === id);
+            if (!service) return;
+
+            document.getElementById('modalTitle').textContent = service.title;
+            document.getElementById('modalPrice').innerHTML = `
+                Стоимость: <span class="font-medium">${service.price}</span><br>
+                <span class="text-base text-[#3F2A1E]/60">Срок: ${service.time}</span>
+            `;
+            document.getElementById('modalDescription').textContent = service.description;
+
+            const featuresList = document.getElementById('modalFeatures');
+            featuresList.innerHTML = service.features.map(feature => `
+                <li class="flex items-start gap-3">
+                    <i class="fa-solid fa-check text-[#A68A64] mt-1.5"></i>
+                    <span>${feature}</span>
+                </li>
+            `).join('');
+
+            document.getElementById('serviceModal').classList.remove('hidden');
+            document.getElementById('serviceModal').classList.add('flex');
+        }
+
+        function closeServiceModal() {
+            const modal = document.getElementById('serviceModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Модальное окно "Написать нам"
+        function openContactModal() {
+            document.getElementById('contactModal').classList.remove('hidden');
+            document.getElementById('contactModal').classList.add('flex');
+        }
+
+        function closeContactModal() {
+            const modal = document.getElementById('contactModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function submitApplication(e) {
+    e.preventDefault();
+    const savedUser = localStorage.getItem('traceCurrentUser');
+    if (!savedUser) {
+        alert('Для оформления услуг необходимо войти в систему на странице "Кабинет"!');
+        window.location.href = 'Cabinet.html';
+        return;
+    }
+    const user = JSON.parse(savedUser);
+    const area = parseInt(document.getElementById('area2').value) || 50;
+    const type = document.getElementById('objType').value || 'Квартира';
+    
+    let store = JSON.parse(localStorage.getItem('traceSystemStore')) || { projects: [], documents: [], chatMessages: [] };
+    const newProj = {
+        id: Math.floor(1000 + Math.random() * 9000),
+        clientEmail: user.email,
+        designerEmail: "designer1@trace.ru",
+        type: type,
+        area: area,
+        status: 'Обсуждение',
+        budget: area * 4000,
+        paid: 0,
+        date: new Date().toLocaleDateString('ru-RU')
+    };
+    store.projects.unshift(newProj);
+    localStorage.setItem('traceSystemStore', JSON.stringify(store));
+    
+    alert('Услуга оформлена! Перенаправляем в личный кабинет проекта.');
+    closeContactModal();
+    window.location.href = 'Cabinet.html';
+}
+
+        function toggleMobileMenu() {
+            alert('Мобильное меню (в полной версии можно реализовать боковую панель)');
+        }
+
+        // Инициализация
+        window.onload = () => {
+            renderServices();
+            console.log('%cTrace Design — страница услуг успешно создана.', 'color:#A68A64; font-size:14px');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет — TRACE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        .tail-container { max-width: 1280px; margin: 0 auto; }
+        .hero-font { font-family: serif; }
+        .card-hover:hover { transform: translateY(-4px); transition: all 0.3s; }
+    </style>
+</head>
+<body class="bg-[#F5F0E8] text-[#3F2A1E] font-light">
+
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="tail-container px-6 py-5 flex justify-between items-center">
+            <a href="index.html" class="text-3xl tracking-widest font-serif">TRACE</a>
+            <nav class="hidden md:flex items-center gap-10 text-sm uppercase tracking-widest">
+                <a href="index.html" class="hover:text-[#A68A64] transition">Главная</a>
+                <a href="About.html" class="hover:text-[#A68A64] transition">О нас</a>
+                <a href="Portfolio.html" class="hover:text-[#A68A64] transition">Портфолио</a>
+                <a href="news.html" class="hover:text-[#A68A64] transition">Новости</a>
+                <a href="Cabinet.html" class="hover:text-[#A68A64] transition">Кабинет</a>
+                <a href="services.html" class="hover:text-[#A68A64] transition">Услуги</a>
+                <button onclick="openContactModal()" class="bg-[#3F2A1E] text-white px-8 py-3.5 text-xs tracking-widest hover:bg-[#A68A64] transition">НАПИСАТЬ НАМ</button>
+            </nav>
+        </div>
+    </header>
+
+    <div class="pt-28 pb-16 tail-container px-6 min-h-screen">
+
+        <!-- Форма входа/регистрации -->
+        <div id="auth-section">
+            <div class="max-w-md mx-auto bg-white shadow-md rounded-3xl p-10">
+                <h1 class="text-4xl hero-font mb-2 text-center">Личный кабинет</h1>
+                <p id="auth-title" class="text-center text-[#A68A64] mb-8">Войдите в аккаунт</p>
+
+                <div id="login-form">
+                    <div class="space-y-6">
+                        <input id="login-email" type="email" placeholder="Email" class="w-full border-b border-[#3F2A1E]/30 py-4 focus:outline-none bg-transparent">
+                        <input id="login-password" type="password" placeholder="Пароль" class="w-full border-b border-[#3F2A1E]/30 py-4 focus:outline-none bg-transparent">
+                        <button onclick="login()" class="w-full bg-[#3F2A1E] hover:bg-[#A68A64] text-white py-4 text-sm uppercase tracking-widest transition">Войти</button>
+                        <p class="text-center text-sm">Нет аккаунта? <span onclick="switchToRegister()" class="text-[#A68A64] cursor-pointer hover:underline">Зарегистрироваться</span></p>
+                    </div>
+                </div>
+
+                <div id="register-form" class="hidden">
+                    <div class="space-y-6">
+                        <input id="reg-name" type="text" placeholder="ФИО" class="w-full border-b border-[#3F2A1E]/30 py-4 focus:outline-none bg-transparent">
+                        <input id="reg-email" type="email" placeholder="Email" class="w-full border-b border-[#3F2A1E]/30 py-4 focus:outline-none bg-transparent">
+                        <input id="reg-password" type="password" placeholder="Пароль" class="w-full border-b border-[#3F2A1E]/30 py-4 focus:outline-none bg-transparent">
+                        <button onclick="register()" class="w-full bg-[#3F2A1E] hover:bg-[#A68A64] text-white py-4 text-sm uppercase tracking-widest transition">Зарегистрироваться</button>
+                        <p class="text-center text-sm">Уже есть аккаунт? <span onclick="switchToLogin()" class="text-[#A68A64] cursor-pointer hover:underline">Войти</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Кабинет -->
+        <div id="cabinet-content" class="hidden">
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <h1 class="text-3xl md:text-5xl hero-font">Добро пожаловать, <span id="user-name" class="text-[#A68A64]"></span></h1>
+                    <p id="user-role-badge" class="text-[#6B5D4B] text-sm mt-1">Личный кабинет</p>
+                </div>
+                <button onclick="logout()" class="px-8 py-3 border border-[#3F2A1E] hover:bg-[#3F2A1E] hover:text-white transition text-sm uppercase tracking-widest">Выйти</button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-7 bg-white rounded-3xl shadow-sm p-10">
+                    <h3 class="text-2xl hero-font mb-6" id="projects-title">Мои проекты</h3>
+                    <div id="projects-list" class="space-y-4"></div>
+                </div>
+
+                <div class="lg:col-span-5 bg-white rounded-3xl shadow-sm p-10">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl hero-font">Документы</h3>
+                        <button id="upload-btn" onclick="uploadDocument()" class="flex items-center gap-2 bg-[#3F2A1E] text-white px-5 py-2.5 rounded-2xl text-sm hover:bg-[#A68A64] transition">
+                            <i class="fa-solid fa-upload"></i> Загрузить
+                        </button>
+                    </div>
+                    <div id="documents-list" class="space-y-3 text-sm"></div>
+                    <p id="no-documents" class="text-[#6B5D4B] text-center py-8">Документов пока нет.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно заявки -->
+    <div id="contactModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-[100]">
+        <div class="bg-white max-w-lg w-full mx-4 p-10 rounded-3xl relative">
+            <h3 class="text-3xl hero-font mb-8">Расскажите о вашем проекте</h3>
+            <form onsubmit="submitApplication(event)" class="space-y-6">
+                <input id="app-name" type="text" placeholder="ФИО" required class="w-full border-b py-4 focus:outline-none">
+                <input id="app-phone" type="tel" placeholder="Телефон" required class="w-full border-b py-4 focus:outline-none">
+                <input id="app-area" type="number" placeholder="Площадь объекта (м²)" required class="w-full border-b py-4 focus:outline-none">
+                <select id="app-type" class="w-full border-b py-4 focus:outline-none">
+                    <option value="Квартира">Квартира</option>
+                    <option value="Дом">Дом</option>
+                    <option value="Офис">Офис</option>
+                </select>
+                <button type="submit" class="w-full bg-[#3F2A1E] text-white py-5 text-sm tracking-widest hover:bg-[#A68A64]">ОТПРАВИТЬ ЗАЯВКУ</button>
+            </form>
+            <button onclick="closeContactModal()" class="absolute top-6 right-6 text-3xl text-[#3F2A1E]">✕</button>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://127.0.0.1:3000';
+        let currentUser = null;
+
+        function switchToRegister() {
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('register-form').classList.remove('hidden');
+        }
+        function switchToLogin() {
+            document.getElementById('register-form').classList.add('hidden');
+            document.getElementById('login-form').classList.remove('hidden');
+        }
+
+        async function register() {
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value.trim();
+            if (!name || !email || !password) return alert('Заполните все поля');
+
+            const res = await fetch(`${API}/api/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password, role: 'client' })
+            });
+            const data = await res.json();
+            if (data.error) return alert(data.error);
+            alert('Регистрация успешна!');
+            switchToLogin();
+        }
+
+        async function login() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+
+            const res = await fetch(`${API}/api/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+            if (data.error) return alert(data.error);
+
+            currentUser = { token: data.token, role: data.role, name: data.name };
+            localStorage.setItem('traceCurrentUser', JSON.stringify(currentUser));
+            showCabinet();
+        }
+
+        function logout() {
+            localStorage.removeItem('traceCurrentUser');
+            currentUser = null;
+            document.getElementById('cabinet-content').classList.add('hidden');
+            document.getElementById('auth-section').classList.remove('hidden');
+        }
+
+        function showCabinet() {
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('cabinet-content').classList.remove('hidden');
+            document.getElementById('user-name').textContent = currentUser.name.split(' ')[0];
+
+            const badge = document.getElementById('user-role-badge');
+
+            if (currentUser.role === 'manager') {
+                badge.textContent = '👔 Панель менеджера';
+                document.getElementById('projects-title').textContent = 'Заявки клиентов';
+                document.getElementById('upload-btn').classList.add('hidden');
+                renderManagerPanel();
+            } else {
+                badge.textContent = 'Личный кабинет Клиента';
+                renderDocuments();
+            }
+        }
+
+        // Кабинет менеджера
+        async function renderManagerPanel() {
+            const appsRes = await fetch(`${API}/api/applications`);
+            const apps = await appsRes.json();
+
+            const filesRes = await fetch(`${API}/api/files`);
+            const files = await filesRes.json();
+
+            // Заявки
+            const projectsList = document.getElementById('projects-list');
+            if (apps.length === 0) {
+                projectsList.innerHTML = '<p class="text-gray-400 text-center py-6">Заявок пока нет</p>';
+            } else {
+                projectsList.innerHTML = apps.map(a => `
+                    <div class="bg-[#F5F0E8] p-5 rounded-2xl border border-[#EDE4D7]">
+                        <p class="font-medium text-lg">${a.name}</p>
+                        <p class="text-sm text-gray-500 mt-1">📞 ${a.phone}</p>
+                        <p class="text-sm text-gray-500">🏠 ${a.type} • ${a.area} м²</p>
+                        <p class="text-xs text-gray-400 mt-2">${new Date(a.created_at).toLocaleDateString('ru-RU')}</p>
+                    </div>
+                `).join('');
+            }
+
+            // Файлы клиентов
+            const docsContainer = document.getElementById('documents-list');
+            const noDoc = document.getElementById('no-documents');
+            if (files.length === 0) {
+                noDoc.classList.remove('hidden');
+                docsContainer.innerHTML = '';
+            } else {
+                noDoc.classList.add('hidden');
+                docsContainer.innerHTML = files.map(f => `
+                    <div class="bg-[#F5F0E8] p-3 rounded-xl flex justify-between items-center text-xs">
+                        <div><p class="font-medium">${f.filename}</p></div>
+                        <a href="${API}${f.filepath}" target="_blank">
+                            <i class="fa-solid fa-download text-[#A68A64] cursor-pointer"></i>
+                        </a>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Кабинет клиента - документы
+        async function renderDocuments() {
+            const res = await fetch(`${API}/api/files`);
+            const files = await res.json();
+            const container = document.getElementById('documents-list');
+            const noDoc = document.getElementById('no-documents');
+
+            if (files.length === 0) {
+                noDoc.classList.remove('hidden');
+                container.innerHTML = '';
+            } else {
+                noDoc.classList.add('hidden');
+                container.innerHTML = files.map(f => `
+                    <div class="bg-[#F5F0E8] p-3 rounded-xl flex justify-between items-center text-xs">
+                        <div><p class="font-medium">${f.filename}</p></div>
+                        <a href="${API}${f.filepath}" target="_blank">
+                            <i class="fa-solid fa-download text-[#A68A64] cursor-pointer"></i>
+                        </a>
+                    </div>
+                `).join('');
+            }
+        }
+
+        async function uploadDocument() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.onchange = async () => {
+                const file = input.files[0];
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('client_id', currentUser.id || 1);
+
+                const res = await fetch(`${API}/api/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Файл загружен!');
+                    renderDocuments();
+                }
+            };
+            input.click();
+        }
+
+        function openContactModal() { document.getElementById('contactModal').classList.remove('hidden'); }
+        function closeContactModal() { document.getElementById('contactModal').classList.add('hidden'); }
+
+        async function submitApplication(e) {
+            e.preventDefault();
+            if (!currentUser) return alert('Сначала войдите в аккаунт!');
+
+            const res = await fetch(`${API}/api/applications`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: document.getElementById('app-name').value,
+                    phone: document.getElementById('app-phone').value,
+                    area: document.getElementById('app-area').value,
+                    type: document.getElementById('app-type').value,
+                    client_id: currentUser.id || 1
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert('Заявка отправлена! Менеджер свяжется с вами.');
+                closeContactModal();
+            }
+        }
+
+        window.onload = () => {
+            const savedUser = localStorage.getItem('traceCurrentUser');
+            if (savedUser) { currentUser = JSON.parse(savedUser); showCabinet(); }
+        };
+    </script>
+</body>
+</html>

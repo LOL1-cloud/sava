@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trace Design — О нас</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        .hero-bg { 
+            background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), 
+                        url('https://salon.ru/storage/thumbs/gallery/781/780192/5000_5000_s935.jpg') center/cover no-repeat; 
+        }
+        .tail-container { max-width: 1280px; margin: 0 auto; }
+        .profile-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .profile-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+        }
+        .quote {
+            font-size: 1.05rem;
+            line-height: 1.45;
+        }
+        .section-title {
+            font-size: 2.75rem;
+        }
+    </style>
+</head>
+<body class="bg-[#F5F0E8] text-[#3F2A1E] font-light">
+
+<!-- HEADER (одинаковый для всех страниц) -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="tail-container px-6 py-5 flex justify-between items-center">
+            <a href="index.html" class="text-3xl tracking-widest font-serif">TRACE</a>
+            
+            <nav class="hidden md:flex items-center gap-10 text-sm uppercase tracking-widest">
+                <a href="index.html" class="hover:text-[#A68A64] transition">Главная</a>
+                <a href="about.html" class="hover:text-[#A68A64] transition">О нас</a>
+                <a href="portfolio.html" class="hover:text-[#A68A64] transition">Портфолио</a>
+                <a href="news.html" class="hover:text-[#A68A64] transition">Новости</a>
+                <a href="cabinet.html" class="hover:text-[#A68A64] transition">Кабинет</a>
+                <a href="services.html" class="hover:text-[#A68A64] transition">Услуги</a>
+                <button onclick="openContactModal()" 
+                        class="bg-[#3F2A1E] text-white px-8 py-3.5 text-xs tracking-widest hover:bg-[#A68A64] transition">
+                    НАПИСАТЬ НАМ
+                </button>
+            </nav>
+
+            <button onclick="toggleMobileMenu()" class="md:hidden text-2xl">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero-bg h-screen flex items-center text-white">
+        <div class="tail-container px-6 max-w-3xl">
+            <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md px-6 py-2.5 rounded-full mb-8">
+                <div class="w-2 h-2 bg-[#A68A64] rounded-full animate-pulse"></div>
+                <span class="text-sm uppercase tracking-[2px] font-medium">Команда профессионалов</span>
+            </div>
+            <h1 class="text-6xl md:text-7xl font-serif leading-tight mb-6">Мы — Trace Design</h1>
+            <p class="text-2xl md:text-3xl max-w-xl opacity-90 leading-tight">Четыре дизайнера. Одна миссия — создавать интерьеры, которые дают энергию и делают жизнь лучше.</p>
+            <div class="flex gap-4 mt-12">
+                <a href="#team" 
+                   class="bg-white text-[#3F2A1E] px-10 py-4 text-sm uppercase tracking-widest hover:bg-[#A68A64] hover:text-white transition flex items-center gap-3">
+                    Познакомиться с командой
+                    <i class="fa-solid fa-arrow-down text-xs"></i>
+                </a>
+                <button onclick="openContactModal()" 
+                        class="border border-white px-10 py-4 text-sm uppercase tracking-widest hover:bg-white/10 transition">
+                    Обсудить проект
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- НАША КОМАНДА -->
+    <section id="team" class="py-28 bg-white">
+        <div class="tail-container px-6">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex justify-center mb-6">
+                    <div class="px-8 py-2 bg-[#F5F0E8] text-[#A68A64] text-sm uppercase tracking-widest font-medium rounded-full inline-flex items-center gap-2">
+                        <i class="fa-solid fa-users"></i>
+                        НАША КОМАНДА
+                    </div>
+                </div>
+                
+                <h2 class="section-title font-serif text-center leading-none mb-10 text-[#3F2A1E]">
+                    Мы стремимся стать<br>студией дизайна №1
+                </h2>
+                
+                <div class="prose prose-lg mx-auto text-center text-[#3F2A1E]/90 leading-relaxed max-w-3xl">
+                    <p class="text-xl">
+                        Мы стремимся стать студией дизайна №1, собрав в свою команду лучших специалистов, 
+                        влюбленных в свою профессию. Профильное образование, сотни семинаров и более 50 тыс. 
+                        часов надзора на объектах разной сложности — с каждым из них ваш ремонт станет лучшим 
+                        событием в жизни!
+                    </p>
+                </div>
+
+                <!-- Групповая фотография (placeholder) -->
+                <div class="mt-20 mb-8 rounded-3xl overflow-hidden shadow-2xl border border-[#F5F0E8]">
+                    <img src="img/Дизайнеры.PNG" />
+                </div>
+                
+                <p class="text-center text-sm text-[#A68A64] tracking-widest uppercase">
+                    Слева направо: Диана • Артур • Мария • Анна
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ПРОФИЛИ ДИЗАЙНЕРОВ -->
+    <section class="py-24 bg-[#3F2A1E]">
+        <div class="tail-container px-6">
+            <div class="flex flex-col items-center mb-16">
+                <span class="text-[#A68A64] text-sm uppercase tracking-[3px] mb-3">ПРОФЕССИОНАЛЫ</span>
+                <h2 class="text-white text-5xl font-serif text-center">Профили дизайнеров</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                
+                <!-- Диана -->
+                <div class="profile-card bg-white rounded-3xl overflow-hidden group">
+                    <div class="relative">
+                        <img src="https://trace-design.ru/wp-content/uploads/command-002.png" 
+                             alt="Диана" 
+                             class="w-full aspect-[4/4.5] object-cover transition duration-700 group-hover:scale-105">
+                        <div class="absolute top-6 right-6 bg-white text-[#3F2A1E] text-xs font-medium px-4 py-2 rounded-2xl shadow">
+                            6 лет
+                        </div>
+                    </div>
+                    <div class="p-8">
+                        <div class="flex justify-between items-baseline mb-6">
+                            <div>
+                                <h3 class="font-serif text-3xl text-[#3F2A1E]">Диана</h3>
+                                <p class="text-[#A68A64] text-sm">70+ проектов</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-xs uppercase tracking-widest text-[#A68A64]">Дизайнер</span>
+                            </div>
+                        </div>
+                        
+                        <p class="quote text-[#3F2A1E]/80 italic mb-10">
+                            «Дизайн — это не просто красивый интерьер, это пространство, которое работает на вас, 
+                            не отнимает энергию, а дает ее. Расскажите мне свою историю, а я переведу ее на язык дизайна интерьера.»
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Артур -->
+                <div class="profile-card bg-white rounded-3xl overflow-hidden group">
+                    <div class="relative">
+                        <img src="https://trace-design.ru/wp-content/uploads/command-006.png" 
+                             alt="Артур" 
+                             class="w-full aspect-[4/4.5] object-cover transition duration-700 group-hover:scale-105">
+                        <div class="absolute top-6 right-6 bg-white text-[#3F2A1E] text-xs font-medium px-4 py-2 rounded-2xl shadow">
+                            10 лет
+                        </div>
+                    </div>
+                    <div class="p-8">
+                        <div class="flex justify-between items-baseline mb-6">
+                            <div>
+                                <h3 class="font-serif text-3xl text-[#3F2A1E]">Артур</h3>
+                                <p class="text-[#A68A64] text-sm">100+ проектов</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-xs uppercase tracking-widest text-[#A68A64]">Дизайнер</span>
+                            </div>
+                        </div>
+                        
+                        <p class="quote text-[#3F2A1E]/80 italic mb-10">
+                            «Ремонт — это всегда нервно. Весь строительный ад я пропускаю через себя, а вам предоставляю 
+                            только суть, понятные и взвешенные решения. Позвольте мне разобраться со всеми вашими переживаниями, 
+                            а вы помечтайте о том, как будете жить в идеальном пространстве.»
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Мария -->
+                <div class="profile-card bg-white rounded-3xl overflow-hidden group">
+                    <div class="relative">
+                        <img src="https://trace-design.ru/wp-content/uploads/command-003.png" 
+                             alt="Мария" 
+                             class="w-full aspect-[4/4.5] object-cover transition duration-700 group-hover:scale-105">
+                        <div class="absolute top-6 right-6 bg-white text-[#3F2A1E] text-xs font-medium px-4 py-2 rounded-2xl shadow">
+                            10 лет
+                        </div>
+                    </div>
+                    <div class="p-8">
+                        <div class="flex justify-between items-baseline mb-6">
+                            <div>
+                                <h3 class="font-serif text-3xl text-[#3F2A1E]">Мария</h3>
+                                <p class="text-[#A68A64] text-sm">100+ проектов</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-xs uppercase tracking-widest text-[#A68A64]">Дизайнер</span>
+                            </div>
+                        </div>
+                        
+                        <p class="quote text-[#3F2A1E]/80 italic mb-10">
+                            «Моя экспертиза — это жесткий каркас. Я знаю, как повесить тяжелую полку так, чтобы она 
+                            парила в воздухе. Я погружаюсь в вашу эстетику, комбинирую цвета и материалы, чтобы они 
+                            отражали именно вас, ваш характер, ваши привычки.»
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Анна -->
+                <div class="profile-card bg-white rounded-3xl overflow-hidden group">
+                    <div class="relative">
+                        <img src="https://trace-design.ru/wp-content/uploads/command-005.png" 
+                             alt="Анна" 
+                             class="w-full aspect-[4/4.5] object-cover transition duration-700 group-hover:scale-105">
+                        <div class="absolute top-6 right-6 bg-white text-[#3F2A1E] text-xs font-medium px-4 py-2 rounded-2xl shadow">
+                            8 лет
+                        </div>
+                    </div>
+                    <div class="p-8">
+                        <div class="flex justify-between items-baseline mb-6">
+                            <div>
+                                <h3 class="font-serif text-3xl text-[#3F2A1E]">Анна</h3>
+                                <p class="text-[#A68A64] text-sm">80+ проектов</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-xs uppercase tracking-widest text-[#A68A64]">Дизайнер</span>
+                            </div>
+                        </div>
+                        
+                        <p class="quote text-[#3F2A1E]/80 italic mb-10">
+                            «Радость клиентов, увидевших результат моей работы, делает каждый проект особенно 
+                            ценным для меня.»
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-20">
+                <div onclick="openContactModal()" 
+                     class="inline-flex items-center gap-4 bg-[#A68A64] hover:bg-[#3F2A1E] text-[#3F2A1E] hover:text-white transition-all px-10 py-5 rounded-2xl text-sm uppercase tracking-widest cursor-pointer">
+                    <span>Готовы работать с нами?</span>
+                    <span class="text-2xl leading-none">→</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-[#3F2A1E] text-white py-16">
+        <div class="tail-container px-6 text-center">
+            <p class="text-[#A68A64] mb-2">© 2026 Trace Design</p>
+            <p class="text-sm opacity-60">Премиальный дизайн интерьеров • Москва</p>
+            <div class="flex justify-center gap-8 mt-10 text-xs opacity-50">
+                <a href="#" class="hover:text-[#A68A64] transition">Политика конфиденциальности</a>
+                <a href="#" class="hover:text-[#A68A64] transition">Договор оферты</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- МОДАЛЬНОЕ ОКНО "НАПИСАТЬ НАМ" -->
+    <div id="contactModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-[100]">
+        <div class="bg-white max-w-lg w-full mx-4 p-10 rounded-3xl">
+            <h3 class="text-3xl font-serif mb-8 text-[#3F2A1E]">Расскажите о вашем проекте</h3>
+            <form onsubmit="submitApplication(event)" class="space-y-6">
+                <input id="name" type="text" placeholder="ФИО" required 
+                       class="w-full border-b border-[#3F2A1E]/30 py-4 focus:outline-none text-[#3F2A1E]">
+                <input id="phone" type="tel" placeholder="Телефон" required 
+                       class="w-full border-b border-[#3F2A1E]/30 py-4 focus:outline-none text-[#3F2A1E]">
+                <input id="area2" type="number" placeholder="Площадь объекта (м²)" required 
+                       class="w-full border-b border-[#3F2A1E]/30 py-4 focus:outline-none text-[#3F2A1E]">
+                <select id="objType" class="w-full border-b border-[#3F2A1E]/30 py-4 focus:outline-none text-[#3F2A1E]">
+                    <option value="">Тип объекта</option>
+                    <option>Квартира</option>
+                    <option>Дом</option>
+                    <option>Офис</option>
+                </select>
+                <button type="submit" 
+                        class="w-full bg-[#3F2A1E] text-white py-5 text-sm tracking-widest hover:bg-[#A68A64] transition rounded-2xl">
+                    ОТПРАВИТЬ ЗАЯВКУ
+                </button>
+            </form>
+            <button onclick="closeContactModal()" 
+                    class="absolute top-8 right-8 text-3xl text-[#3F2A1E]/40 hover:text-[#3F2A1E] transition">✕</button>
+        </div>
+    </div>
+
+    <script>
+        // Tailwind config
+        function initTailwind() {
+            tailwind.config = { 
+                content: [], 
+                theme: { 
+                    extend: {
+                        fontFamily: {
+                            serif: ['Playfair Display', 'serif']
+                        }
+                    } 
+                } 
+            }
+        }
+
+        // Модальное окно
+        function openContactModal() {
+            document.getElementById('contactModal').classList.remove('hidden');
+            document.getElementById('contactModal').classList.add('flex');
+        }
+        
+        function closeContactModal() {
+            const modal = document.getElementById('contactModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function submitApplication(e) {
+    e.preventDefault();
+    const savedUser = localStorage.getItem('traceCurrentUser');
+    if (!savedUser) {
+        alert('Пожалуйста, сначала авторизуйтесь или создайте аккаунт на странице "Кабинет"!');
+        window.location.href = 'Cabinet.html';
+        return;
+    }
+    const user = JSON.parse(savedUser);
+    const area = parseInt(document.getElementById('area2').value) || 50;
+    const type = document.getElementById('objType').value || 'Квартира';
+    
+    let store = JSON.parse(localStorage.getItem('traceSystemStore')) || { projects: [], documents: [], chatMessages: [] };
+    const newProj = {
+        id: Math.floor(1000 + Math.random() * 9000),
+        clientEmail: user.email,
+        designerEmail: "designer1@trace.ru",
+        type: type,
+        area: area,
+        status: 'Обсуждение',
+        budget: area * 4000,
+        paid: 0,
+        date: new Date().toLocaleDateString('ru-RU')
+    };
+    store.projects.unshift(newProj);
+    localStorage.setItem('traceSystemStore', JSON.stringify(store));
+    
+    alert('Заявка принята! Переходим в личный кабинет.');
+    closeContactModal();
+    window.location.href = 'Cabinet.html';
+}
+
+        // Мобильное меню (упрощённо)
+        function toggleMobileMenu() {
+            alert('Мобильное меню будет реализовано в финальной версии сайта');
+        }
+
+        // Инициализация
+        window.onload = () => {
+            initTailwind();
+            console.log('%cTrace Design — раздел «О нас» успешно создан. Дизайн полностью соответствует брендбуку.', 'color:#A68A64; font-size:13px');
+            
+            // Плавная прокрутка для якоря
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    if (this.getAttribute('href') === '#team') {
+                        e.preventDefault();
+                        document.getElementById('team').scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Портфолио — Trace Design</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        .hero-bg { 
+            background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), 
+                        url('https://trace-design.ru/wp-content/uploads/3-27.webp') center/cover no-repeat; 
+        }
+        .tail-container { max-width: 1280px; margin: 0 auto; }
+        .project-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .project-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.15);
+        }
+        .nav-link {
+            position: relative;
+        }
+        .nav-link:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: #A68A64;
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover:after,
+        .nav-link.active:after {
+            width: 100%;
+        }
+        .modal {
+            animation: modalFade 0.3s ease forwards;
+        }
+        @keyframes modalFade {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .carousel-slide {
+            scroll-snap-align: start;
+        }
+        .section-header {
+            font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+        }
+    </style>
+</head>
+<body class="bg-[#F5F0E8] text-[#3F2A1E] font-light">
+
+    <!-- HEADER (одинаковый для всех страниц) -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="tail-container px-6 py-5 flex justify-between items-center">
+            <a href="index.html" class="text-3xl tracking-widest font-serif">TRACE</a>
+            
+            <nav class="hidden md:flex items-center gap-10 text-sm uppercase tracking-widest">
+                <a href="index.html" class="hover:text-[#A68A64] transition">Главная</a>
+                <a href="about.html" class="hover:text-[#A68A64] transition">О нас</a>
+                <a href="portfolio.html" class="hover:text-[#A68A64] transition">Портфолио</a>
+                <a href="news.html" class="hover:text-[#A68A64] transition">Новости</a>
+                <a href="cabinet.html" class="hover:text-[#A68A64] transition">Кабинет</a>
+                <a href="services.html" class="hover:text-[#A68A64] transition">Услуги</a>
+                <button onclick="openContactModal()" 
+                        class="bg-[#3F2A1E] text-white px-8 py-3.5 text-xs tracking-widest hover:bg-[#A68A64] transition">
+                    НАПИСАТЬ НАМ
+                </button>
+            </nav>
+
+            <button onclick="toggleMobileMenu()" class="md:hidden text-2xl">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- HERO PORTFOLIO -->
+    <section class="hero-bg h-[520px] flex items-center text-white relative">
+        <div class="tail-container px-6">
+            <div class="max-w-2xl">
+                <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md px-6 py-2.5 rounded-full text-sm mb-6">
+                    <span class="w-2 h-2 bg-[#A68A64] rounded-full animate-pulse"></span>
+                    НАШИ РАБОТЫ
+                </div>
+                <h1 class="text-6xl md:text-7xl font-serif leading-none tracking-tighter">Портфолио</h1>
+                <p class="text-xl mt-6 max-w-md opacity-90">Более 9 лет создаём интерьеры, которые становятся отражением характера владельцев</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ФИЛЬТРЫ И СЕТКА ПРОЕКТОВ -->
+    <section class="py-20 bg-white">
+        <div class="tail-container px-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+                <div>
+                    <h2 class="section-header text-5xl">Все проекты</h2>
+                    <p class="text-[#A68A64] mt-2">900+ проектов не уместить на сайте - посмотрите последние наши дизайн-проекты</p>
+                </div>
+                
+                <div class="flex flex-wrap gap-3" id="filters">
+                    <button onclick="filterProjects('all')" 
+                            class="active-filter px-8 py-3.5 text-sm uppercase tracking-widest border border-[#3F2A1E] hover:bg-[#3F2A1E] hover:text-white transition rounded-full">Все</button>
+                    <button onclick="filterProjects('Private houses')" 
+                            class="px-8 py-3.5 text-sm uppercase tracking-widest border border-[#3F2A1E]/30 hover:border-[#3F2A1E] transition rounded-full">Частные дома</button>
+                    <button onclick="filterProjects('modern')" 
+                            class="px-8 py-3.5 text-sm uppercase tracking-widest border border-[#3F2A1E]/30 hover:border-[#3F2A1E] transition rounded-full">Современный</button>
+                    <button onclick="filterProjects('neo')" 
+                            class="px-8 py-3.5 text-sm uppercase tracking-widest border border-[#3F2A1E]/30 hover:border-[#3F2A1E] transition rounded-full">Неоклассика</button>
+                    <button onclick="filterProjects('eclecticism')" 
+                            class="px-8 py-3.5 text-sm uppercase tracking-widest border border-[#3F2A1E]/30 hover:border-[#3F2A1E] transition rounded-full">Эклектика</button>
+                    <button onclick="filterProjects('classic')" 
+                            class="px-8 py-3.5 text-sm uppercase tracking-widest border border-[#3F2A1E]/30 hover:border-[#3F2A1E] transition rounded-full">Классика</button>
+                    <button onclick="filterProjects('minimalism')" 
+                            class="px-8 py-3.5 text-sm uppercase tracking-widest border border-[#3F2A1E]/30 hover:border-[#3F2A1E] transition rounded-full">Минимализм</button>
+                </div>
+            </div>
+
+            <!-- СЕТКА ПРОЕКТОВ -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="portfolio-grid">
+                <!-- Заполняется через JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#3F2A1E] text-white py-16">
+        <div class="tail-container px-6 text-center">
+            <div class="flex justify-center gap-8 mb-8 text-2xl">
+                <a href="https://web.telegram.org/a/#-1002108500075" class="hover:text-[#A68A64] transition"><i class="fa-brands fa-telegram"></i></a>
+                <a href="https://vk.com/trace_design?search_track_code=d42f63e9FKIi8F0DvMU7cC_jDbKPDclabQUL6elqZQp6pGBI0w58YvRulIkGH6VJV-EepYY-005XBDHv6WZ4JW7XDzeOTxElpiXX1VNPsVdT8gejnGM" class="hover:text-[#A68A64] transition"><i class="fa-brands fa-vk"></i></a>
+            </div>
+            <p class="text-[#A68A64] mb-2">© 2026 Trace Design</p>
+            <p class="text-sm opacity-60">Премиальный дизайн интерьеров • Москва и МО</p>
+            <p class="text-xs opacity-40 mt-8">+7 965 204 71 13</p>
+        </div>
+    </footer>
+
+    <!-- МОДАЛЬНОЕ ОКНО ДЕТАЛЬНОГО ПРОСМОТРА ПРОЕКТА -->
+    <div id="projectModal" onclick="if(event.target.id === 'projectModal') closeProjectModal()" 
+         class="hidden fixed inset-0 bg-black/90 z-[9999] flex items-center justify-center overflow-y-auto p-4">
+        <div class="modal bg-white max-w-7xl w-full mx-auto max-h-[95vh] overflow-hidden flex flex-col" 
+             onclick="event.stopImmediatePropagation()">
+            
+            <!-- ШАПКА МОДАЛЬНОГО ОКНА -->
+            <div class="flex items-center justify-between border-b px-8 py-6 bg-white sticky top-0 z-10">
+                <div class="flex items-center gap-4">
+                    <a href="portfolio.html" onclick="closeProjectModal(); return false;" 
+                       class="flex items-center gap-2 text-sm uppercase tracking-widest hover:text-[#A68A64]">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>В ПОРТФОЛИО</span>
+                    </a>
+                    <div class="h-5 w-px bg-[#3F2A1E]/20"></div>
+                    <div id="modal-breadcrumb" class="text-xs text-[#A68A64] font-medium"></div>
+                </div>
+                
+                <button onclick="closeProjectModal()" 
+                        class="w-10 h-10 flex items-center justify-center text-3xl leading-none hover:text-[#A68A64] transition">×</button>
+            </div>
+
+            <div class="overflow-y-auto flex-1" id="modal-content">
+                <!-- ДИНАМИЧЕСКИ ЗАПОЛНЯЕТСЯ JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО "НАПИСАТЬ НАМ" (из index.html) -->
+    <div id="contactModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-[10000]">
+        <div class="bg-white max-w-lg w-full mx-4 p-10 rounded-2xl">
+            <h3 class="text-3xl font-serif mb-8">Расскажите о вашем проекте</h3>
+            <form onsubmit="submitApplication(event)" class="space-y-6">
+                <input id="name" type="text" placeholder="ФИО" required 
+                       class="w-full border-b border-[#3F2A1E]/30 py-4 focus:outline-none text-lg placeholder:text-[#3F2A1E]/40">
+                <input id="phone" type="tel" placeholder="Телефон" required 
+                       class="w-full border-b border-[#3F2A1E]/30 py-4 focus:outline-none text-lg placeholder:text-[#3F2A1E]/40">
+                <input id="area2" type="number" placeholder="Площадь объекта (м²)" required 
+                       class="w-full border-b border-[#3F2A1E]/30 py-4 focus:outline-none text-lg placeholder:text-[#3F2A1E]/40">
+                <select id="objType" class="w-full border-b border-[#3F2A1E]/30 py-4 focus:outline-none text-lg">
+                    <option value="">Тип объекта</option>
+                    <option>Квартира</option>
+                    <option>Дом / Коттедж</option>
+                    <option>Беседка / Павильон</option>
+                    <option>Офис</option>
+                </select>
+                <button type="submit" 
+                        class="w-full bg-[#3F2A1E] text-white py-6 text-sm tracking-[1.5px] hover:bg-[#A68A64] transition font-medium">
+                    ОТПРАВИТЬ ЗАЯВКУ
+                </button>
+            </form>
+            <button onclick="closeContactModal()" 
+                    class="absolute top-8 right-8 text-4xl leading-none text-[#3F2A1E]/40 hover:text-[#3F2A1E]">×</button>
+        </div>
+    </div>
+
+    <script>
+        // Tailwind config
+        function initTailwind() {
+            tailwind.config = {
+                content: [],
+                theme: {
+                    extend: {}
+                }
+            }
+        }
+
+        // Данные всех 6 проектов
+        let allProjects = [
+            {
+                id: 1,
+                title: "Беседка в коттеджном поселке «Золотой город»",
+                area: "34,21 м²",
+                year: "2026",
+                place: "Коттеджный поселок «Золотой город»",
+                style: "Американская классика",
+                img: "https://trace-design.ru/wp-content/uploads/3-27.webp",
+                category: "Private houses",
+                floorPlan: "https://trace-design.ru/wp-content/uploads/planirovka-22.webp", // Заменить на реальное изображение планировки
+                visuals: [
+                    "https://trace-design.ru/wp-content/uploads/4-24.webp",
+                    "https://trace-design.ru/wp-content/uploads/6-27.webp",
+                    "https://trace-design.ru/wp-content/uploads/2-28.webp",
+                    "https://trace-design.ru/wp-content/uploads/4-24.webp",
+                    "https://trace-design.ru/wp-content/uploads/5-28.webp",
+                    "https://trace-design.ru/wp-content/uploads/7-25.webp",
+                    "https://trace-design.ru/wp-content/uploads/8-26.webp",
+                    "https://trace-design.ru/wp-content/uploads/9-28.webp",
+                    "https://trace-design.ru/wp-content/uploads/10-27.webp",
+                    "https://trace-design.ru/wp-content/uploads/1-28.webp"
+                ],
+                description: `
+                    <h3 class="text-2xl font-medium mb-6 border-b pb-4">Запрос клиента</h3>
+                    <p class="mb-8 leading-relaxed text-[15.2px]">Клиент обратился с запросом на многофункциональный садовый павильон, который работал бы как продолжение загородного дома. Было важно вместить в одном объёме сразу несколько зон: кухонный блок с дровяной печью для готовки, зону камина для уютных вечеров, полноценную обеденную группу и мягкую лаунж-зону. Ключевые приоритеты — классический американский стиль с его масштабом и благородством материалов, атмосфера загородной усадьбы, а также максимальная визуальная связь с двором и садом.</p>
+                    
+                    <h3 class="text-2xl font-medium mb-6 border-b pb-4">Особенности или сложности проекта</h3>
+                    <p class="mb-8 leading-relaxed text-[15.2px]">Главная сложность — необходимость совместить несколько активных функций в одном открытом пространстве без визуального хаоса. Камин, дровяная печь и кухонная зона требовали строгого соблюдения норм безопасности, вентиляции и эргономики.</p>
+                    <p class="mb-8 leading-relaxed text-[15.2px]">Дополнительный вызов — панорамное остекление с полным открыванием: конструкции должны были быть лёгкими и практичными, но при этом соответствовать масштабу классического интерьера. Также стояла задача обеспечить комфорт в разные сезоны — от летних жарких дней до прохладных вечеров, что потребовало продуманного отопления и теплоизоляции при сохранении эффекта «открытой веранды».</p>
+                    
+                    <h3 class="text-2xl font-medium mb-6 border-b pb-4">Дизайнерское решение</h3>
+                    <p class="mb-8 leading-relaxed text-[15.2px]">Мы выстроили концепцию «классической загородной усадьбы в миниатюре». Центральная ось — камин с мраморным порталом. Вокруг него сгруппированы мягкая зона отдыха и обеденный стол. Кухонный блок, обеденная зона и лаунж-зона четко читаются благодаря мебельным группам, но визуально объединены в единое пространство.</p>
+                    <p class="mb-8 leading-relaxed text-[15.2px]">Панорамные окна открываются полностью, превращая беседку в открытую террасу. Массив дерева, мрамор, лепнина, хрустальные люстры и живые пальмы создают атмосферу наследственной усадьбы. Многослойное освещение позволяет использовать пространство как днем, так и вечером.</p>
+                    <p class="mb-8 leading-relaxed text-[15.2px]">Материалы и декор в духе американской классики. Массив дерева (стол, стулья, мебель), мрамор каминного портала, лепной декор на потолке, молдинги на стенах, хрустальные люстры с каплевидными подвесками и классические бра с тканевыми абажурами. Всё это создаёт ощущение наследственной усадьбы.
+                    <p class="mb-8 leading-relaxed text-[15.2px]">Живая зелень внутри. Крупные пальмы в кашпо стоят по обе стороны от камина, усиливая связь интерьера с садом и добавляя тропической свежести классической обстановке.
+                    <p class="mb-8 leading-relaxed text-[15.2px]">Многослойный свет. Дневной свет через панораму, вечерний — от хрустальных люстр и настенных бра, а также функциональная подсветка кухонной зоны. Это позволяет использовать беседку и для дневного ланча, и для вечернего ужина при свечах.
+                    
+
+
+                    <h3 class="text-2xl font-medium mb-6 border-b pb-4">Результат</h3>
+                    <p class="mb-8 leading-relaxed text-[15.2px]">В итоге получился не просто летний домик, а полноценная классическая гостиная на природе. Беседка интересна тем, что в ней уживаются сразу четыре функции — готовка на дровах, обед у камина, отдых на диване и приём гостей на свежем воздухе — без ощущения перегруженности.</p>
+                    <p class="mb-8 leading-relaxed text-[15.2px]">Главная удача проекта — панорамное остекление, стирающее границу между внутренним пространством и двором. Когда окна открыты, классический интерьер с хрустальными люстрами и мраморным камином буквально выливается в сад, создавая эффект открытой американской веранды. А когда закрыты — пространство превращается в уютную застеклённую гостиную, защищённую от погоды. Это редкий пример, когда столь насыщенная функциями постройка выглядит элегантно, респектабельно и при этом абсолютно органично вписывается в ландшафт.
+
+                `
+            },
+            {
+                id: 2,
+                title: "ЖК Золотые Ворота",
+                area: "95 м²",
+                year: "2026",
+                place: "ЖК «Золотые Ворота»",
+                style: "Современный минимализм",
+                img: "https://trace-design.ru/wp-content/uploads/b_dramatichnoe_i_natura23.webp",
+                category: "minimalism",  
+                floorPlan: "https://trace-design.ru/wp-content/uploads/planirovka-20.webp",
+                visuals: [
+                    "https://trace-design.ru/wp-content/uploads/a_dramatichnoe_i_natura-1.webp",
+                    "https://trace-design.ru/wp-content/uploads/a_dramatichnoe_i_natura-3.webp",
+                    "https://trace-design.ru/wp-content/uploads/a_Zameni_fon_za_oknom_.webp",
+                    "https://trace-design.ru/wp-content/uploads/a_Sdelaj_izobrazhenie_m.webp",
+                    "https://trace-design.ru/wp-content/uploads/a_Sdelaj_izobrazhenie_s.webp",
+                    "https://trace-design.ru/wp-content/uploads/a_Sdelaj_kartinku_chut.webp",
+                    "https://trace-design.ru/wp-content/uploads/b_dramatichnoe_i_natura.webp",
+                    "https://trace-design.ru/wp-content/uploads/b_dramatichnoe_i_natura1.webp",
+                    "https://trace-design.ru/wp-content/uploads/b_dramatichnoe_i_natura23.webp",
+                    "https://trace-design.ru/wp-content/uploads/b_par_vyhodit_iz_dushev.webp",
+                    "https://trace-design.ru/wp-content/uploads/rptsprotpospgor.webp",
+                    "https://trace-design.ru/wp-content/uploads/b_Sdelaj_izobrazhenie_n.webp"
+                ],
+                description: `
+                    <p class="italic text-[#A68A64] mb-8">Полноценный семейный интерьер в современном стиле с теплыми натуральными материалами. Максимальная функциональность и ощущение уюта.</p>
+                    <h3 class="text-2xl font-medium mb-6">Запрос клиента</h3>
+                    <p class="mb-10 leading-relaxed">Клиент хочет создать в квартире единый современный стиль, который объединит все помещения в цельное и гармоничное пространство. Особое внимание уделяется зоне кухни-гостиной: она должна быть максимально функциональной, удобной для приготовления еды, приёма гостей и комфортного отдыха. Зонирование пространства планируется выполнить без жёстких перегородок — мягко, с помощью света, композиции, уровней и мебели. При этом важно максимально использовать встроенные системы хранения, чтобы полностью избавиться от визуального мусора и сохранить ощущение чистоты и порядка. Главная задача — создать тёплую, уютную атмосферу с продуманными сценариями освещения и аккуратными тёплыми акцентами, которые делают пространство живым и по-настоящему комфортным для жизни.</p>
+                    <h3 class="text-2xl font-medium mb-6">Дизайнерское решение</h3>
+                    <p class="mb-10 leading-relaxed">Вся квартира выполнена в едином дизайнерском сценарии. Светлая база стен, потолка и общего тона максимально усиливает дневной свет и визуально увеличивает пространство. На этом фоне лаконичные тёмные плоскости кухни и встроенных модулей с подсветкой ниш читаются как архитектурные элементы композиции. Трековая система направляет свет точно в нужные зоны, поддерживая сценарий кухни-гостиной и подчёркивая фактуры, а выразительная люстра нестандартной формы над столовой задаёт интерьеру характер без лишнего декора. Всё хранение грамотно встроено в шкафы и ниши, поэтому пространство остаётся собранным и визуально чистым.</p>
+                    <h3 class="text-2xl font-medium mb-6">Результат</h3>
+                    <p class="leading-relaxed">Квартира получилась стильной и “воздушной”: благодаря светлой базе, точному контрасту и продуманному освещению она выглядит современно и дорого. Самое крутое в проекте — баланс: интерьер не уходит ни в холодный минимализм, ни в перегруз деталями; он держится на архитектуре, грамотном свете и встроенном порядке.</p>
+                `
+            },
+            {
+                id: 3,
+                title: "ЖК Живописный",
+                area: "56,12 м²",
+                year: "2026",
+                place: "ЖК «Живописный»",
+                style: "Классика",
+                img: "https://trace-design.ru/wp-content/uploads/17-21.webp",
+                category: "classic",
+                floorPlan: "https://trace-design.ru/wp-content/uploads/planirovka-19.webp",
+                visuals: [
+                    "https://trace-design.ru/wp-content/uploads/13-23.webp",
+                    "https://trace-design.ru/wp-content/uploads/6-24.webp",
+                    "https://trace-design.ru/wp-content/uploads/12-24.webp",
+                    "https://trace-design.ru/wp-content/uploads/5-24.webp",
+                    "https://trace-design.ru/wp-content/uploads/14-23.webp",
+                    "https://trace-design.ru/wp-content/uploads/1-25.webp",
+                    "https://trace-design.ru/wp-content/uploads/15-22.webp",
+                    "https://trace-design.ru/wp-content/uploads/19-21.webp",
+                    "https://trace-design.ru/wp-content/uploads/22-17.webp",
+                    "https://trace-design.ru/wp-content/uploads/23-17.webp",
+                    "https://trace-design.ru/wp-content/uploads/24-15.webp"
+                ],
+                description: `
+                    <p class="italic text-[#A68A64] mb-8">Проект городской квартиры, выдержанный в сдержанной медитативной палитре. Задачей стало создать пространство, которое работает как личное убежище от городской суеты — с минимумом визуального шума, но с максимумом тактильного комфорта.</p>
+                    <h3 class="text-2xl font-medium mb-6">Запрос клиента</h3>
+                    <p class="mb-10 leading-relaxed">Клиент обратился с запросом на спокойный, «тихий» интерьер, где можно восстановить силы. Было важно избежать как ярких цветов, так и холодной стерильности типового минимализма. Ключевые приоритеты: натуральные материалы с богатой фактурой, продуманное естественное освещение, скрытые системы хранения и ощущение защищённости. Планировка требовала зонирования, но без перегородок — пространство должно было дышать.</p>
+                    <h3 class="text-2xl font-medium mb-6">Особенности или сложности проекта</h3>
+                    <p class="mb-10 leading-relaxed">Главный вызов — типовая городская площадь, где необходимо было уместить все функции современной жизни, не нарушая визуальной «пустоты». При этом аскетичный запрос клиента не подразумевал экономию на материалах: интерьер должен был выглядеть дорого, но сдержанно. Дополнительная сложность — работа с ограниченным естественным светом в некоторых зонах и необходимость создать единое настроение от прихожей до спальни, чтобы квартира воспринималась как единое целое.</p>
+                    <h3 class="text-2xl font-medium mb-6">Дизайнерское решение</h3>
+                    <p class="mb-10 leading-relaxed">Мы создали пространство, где красота живёт в несовершенстве текстур и тишине форм. Всё построено на единой приглушённой палитре тёплого грей-бежа, угольно-серого и натурального дуба, которая плавно перетекает из комнаты в комнату. Главным декором стала фактура: акцентные панели с грубой каменной кладкой и штукатуркой под срез скалы контрастируют с гладкими матовыми стенами, придавая глубину и характер.</p>
+                    <p class="mb-10 leading-relaxed">Низкопрофильная мебель, крупные живые растения, мягкие световые сценарии без резких теней и продуманное скрытое хранение создают ощущение спокойствия, простора и естественной гармонии.</p>
+                    <h3 class="text-2xl font-medium mb-6">Результат</h3>
+                    <p class="mb-10 leading-relaxed">В итоге получилась квартира, которая не кричит, а шепчет. Главная удача проекта — в создании ощущения «тишины» внутри городского пространства. За счёт сдержанной палитры, контраста грубой каменной фактуры и мягкого текстиля, а также точечной биофилии интерьер получился не просто стильным, но по-настоящему терапевтическим.</p>
+                    <p class="mb-10 leading-relaxed">Квартира интересна тем, что доказывает: минимализм не равно пустота. Каждая поверхность здесь несёт смысл: шероховатый камень успокаивает взгляд, тёплый дуб согревает стопы, а свет, падающий через окно, становится главным художником пространства. Это дом, который заставляет замедлиться.</p>
+                `
+            },
+            {
+                id: 4,
+                title: "ЖК Бунинские Кварталы",
+                area: "70 м²",
+                year: "2026",
+                place: "ЖК «Бунинские Кварталы»",
+                style: "Неоклассика",
+                img: "https://trace-design.ru/wp-content/uploads/8-23.webp",
+                category: "neo", 
+                floorPlan: "https://trace-design.ru/wp-content/uploads/planirovka-12.webp",
+                visuals: [
+                    "https://trace-design.ru/wp-content/uploads/5-22.webp",
+                    "https://trace-design.ru/wp-content/uploads/6-22.webp",
+                    "https://trace-design.ru/wp-content/uploads/7-20.webp",
+                    "https://trace-design.ru/wp-content/uploads/9-23.webp",
+                    "https://trace-design.ru/wp-content/uploads/12-22.webp",
+                    "https://trace-design.ru/wp-content/uploads/1774722151718-019d35ae-8037-7589-97fc-6db1f3f984c7.webp",
+                    "https://trace-design.ru/wp-content/uploads/1774722662822-019d35b6-581e-7378-9a36-7a0162f12f94.webp",
+                    "https://trace-design.ru/wp-content/uploads/1774723059903-019d35bc-8a4e-7e53-94c1-844fcc200a44.webp",
+                    "https://trace-design.ru/wp-content/uploads/1774761493340-019d3806-6cc0-7b92-a3c9-38b89dc1503a.webp",
+                    "https://trace-design.ru/wp-content/uploads/1774762424236-019d3814-e4e2-756b-a3c2-7097705aca34-1.webp",
+                    "https://trace-design.ru/wp-content/uploads/1774762553385-019d3817-085e-7268-baa9-28991e46a7e6.webp",
+                    "https://trace-design.ru/wp-content/uploads/1774767482435-019d3862-5f94-71c0-81a0-b8ab4a43f127.webp",
+                    "https://trace-design.ru/wp-content/uploads/1774768139555-019d386c-62e3-70fe-b2e0-3a927a8779be.webp",
+                    "https://trace-design.ru/wp-content/uploads/1774768275558-019d386e-4838-72a0-bd3f-0571dc0fb10a.webp",
+                    "https://trace-design.ru/wp-content/uploads/1-23.webp"
+                ],
+                description: `
+                    <p class="italic text-[#A68A64] mb-8">Проект городской квартиры, выдержанный в светлой, воздушной палитре с тёплыми металлическими акцентами. Задачей стало создать пространство, которое одновременно выглядит изысканно и современно, — без тяжести традиционной классики, но с её же благородством материалов и пропорций.</p>
+                    <h3 class="text-2xl font-medium mb-6">Запрос клиента</h3>
+                    <p class="mb-10 leading-relaxed">Клиент обратился с запросом на светлый, «женственный» и элегантный интерьер, в котором приятно находиться в любое время суток. Было важно выстроить функциональную кухню-гостиную, сохранив ощущение лёгкости и чистоты. Ключевые приоритеты — стиль (современная классика с элементами ар-деко), насыщенный естественный свет, продуманное хранение и атмосфера уютного люкса, где всё дышит и не давит.</p>
+                    <h3 class="text-2xl font-medium mb-6">Особенности или сложности проекта</h3>
+                    <p class="mb-10 leading-relaxed">Основная сложность — компактность типовой планировки, в рамках которой необходимо было разместить полноценную кухню, обеденную группу и зону отдыха, не создавая визуального хаоса. Дополнительный вызов — работа с белоснежной базой и золотистой фурнитурой: риск получить либо слишком стерильное, либо вычурное пространство был высок. Нужно было найти точку баланса, где роскошь чувствуется, но не кричит.</p>
+                    <h3 class="text-2xl font-medium mb-6">Дизайнерское решение</h3>
+                    <p class="mb-10 leading-relaxed">Мы выстроили концепцию «воздушного классического люкса», которая пронизывает всю квартиру: светлая база из белых и молочных стен, светлого паркета или крупноформатной плитки и обилие натурального света визуально расширяет пространство, создавая эффект чистоты. Мрамор Calacatta с серыми прожилками объединяет фартук кухни, столешницу острова и поверхности в ванной, добавляя статусность и природную текстуру.</p>
+                    <p class="mb-10 leading-relaxed">Матовые металлические акценты в ножках мебели, фурнитуре, рамах витрин и светильниках выступают единым визуальным кодом, согревая белую гамму и делая интерьер дорогим. Лёгкая мебель с тонкими основаниями, изящными золотыми ножками и обтекаемыми формами рождает ощущение невесомости, а многослойный свет с авторской люстрой в виде цветущей ветви над столом, бронзовыми цилиндрическими светильниками и LED-подсветкой задаёт романтическое настроение. Встроенные шкафы до потолка, подсвеченные витрины и полностью скрытая техника сохраняют идеальный порядок и визуальную целостность.</p>
+                    <h3 class="text-2xl font-medium mb-6">Результат</h3>
+                    <p class="mb-10 leading-relaxed">В итоге получилась квартира с безупречным чувством стиля — она напоминает интерьер парижской квартиры или светлый пентхаус. Главная удача проекта в том, что нам удалось совместить холодную роскошь мрамора и золота с невероятной мягкостью и воздушностью. </p>
+                    <p class="mb-10 leading-relaxed">Квартира интересна своей детализацией: ребристое основание стола, фактура филенчатых фасадов, люстра-ветвь и пудровый бархат стульев создают многослойный, богатый интерьер, который при этом остаётся современным и лёгким. Это пространство, где классика не копирует прошлое, а говорит современным языком — языком света, текстуры и изящной пропорции.</p>
+                `
+            },
+            {
+                id: 5,
+                title: "ЖК Акватория",
+                area: "86,57 м²",
+                year: "2026",
+                place: "ЖК «Акватория»",
+                style: "Эклектика",
+                img: "https://trace-design.ru/wp-content/uploads/12-20.webp",
+                category: "eclecticism",
+                floorPlan: "https://trace-design.ru/wp-content/uploads/planirovka-16.webp",
+                visuals: [
+                    "https://trace-design.ru/wp-content/uploads/17-18.webp",
+                    "https://trace-design.ru/wp-content/uploads/19-18.webp",
+                    "https://trace-design.ru/wp-content/uploads/12-20.webp",
+                    "https://trace-design.ru/wp-content/uploads/16-16.webp",
+                    "https://trace-design.ru/wp-content/uploads/1-21.webp",
+                    "https://trace-design.ru/wp-content/uploads/2-21.webp",
+                    "https://trace-design.ru/wp-content/uploads/3-20.webp",
+                    "https://trace-design.ru/wp-content/uploads/5-20.webp",
+                    "https://trace-design.ru/wp-content/uploads/6-21.webp",
+                    "https://trace-design.ru/wp-content/uploads/11-18.webp",
+                    "https://trace-design.ru/wp-content/uploads/22-14.webp",
+                    "https://trace-design.ru/wp-content/uploads/25-11.webp",
+                    "https://trace-design.ru/wp-content/uploads/28-7.webp"
+                ],
+                description: `
+                   <p class="italic text-[#A68A64] mb-8">Проект задумывался как интерьер с “театральной” подачей: мягкий свет, благородные материалы и продуманный ритм в деталях. Вся квартира выполнена в единой эстетике — спокойной по базе, но с эффектными архитектурными акцентами, чтобы в каждом помещении было ощущение статуса и уюта.</p>
+                    <h3 class="text-2xl font-medium mb-6">Запрос клиента</h3>
+                    <p class="mb-10 leading-relaxed">Клиент обратился с задачей создать интерьер квартиры, который бы транслировал статус и чувство стиля, но оставался настоящим домом — без холодного «отельного» глянца. Было важно выстроить пространство вокруг личности хозяина: здесь должна была уживаться современная роскошь, комфорт и арт-объекты. Ключевые запросы — мягкое зонирование открытых пространств, места для коллекции искусства, вместительные, но лёгкие системы хранения и атмосфера «уютной галереи», где хочется не только любоваться, но и жить.</p>
+                    <h3 class="text-2xl font-medium mb-6">Особенности или сложности проекта</h3>
+                    <p class="mb-10 leading-relaxed">Работа велась, в рамках типовой планировки современной новостройки с монолитными стенами и ограниченными возможностями для перепланировки. Главный вызов — совместить публичную и приватную зоны так, чтобы квартира не выглядела набором отдельных комнат, а воспринималась как единое текучее пространство. Дополнительная сложность — баланс роскоши и тепла: заказчик хотел дорогой, выразительный интерьер, но без вульгарной демонстрации богатства. Нужно было найти точку, где статусность перестаёт давить и превращается в комфорт.</p>
+                    <h3 class="text-2xl font-medium mb-6">Дизайнерское решение</h3>
+                    <p class="mb-10 leading-relaxed">Чёрный цвет используется как графический якорь: тонированное стекло витрин, чёрные рамы арт-объектов, тёмный металл и акценты в текстиле объединяют все помещения, добавляя глубину и лёгкую драматургию.</p>
+                    <p class="mb-10 leading-relaxed">Важную роль играет арт-интеграция и биофилия. В каждой зоне появился свой выразительный арт-объект — крупные постеры в массивных рамах, авторские скульптуры или крупные комнатные растения. Растения в керамических кашпо присутствуют во всех помещениях, оживляя интерьер и снимая ощущение официальности.</p>
+                    <p class="mb-10 leading-relaxed">Освещение построено по принципу многослойности. Повторяющийся мотив — изящные кольцевые подвесные светильники с кристальными элементами и тёплой металлической фурнитурой — объединяет гостиную, столовую и холл. Их дополняют скрытые LED-профили и локальные торшеры.</p>
+                    <p class="mb-10 leading-relaxed">Смягчение достигается за счёт округлых, органичных форм — модульных диванов, круглых пуфов, мягких линий текстиля и керамических кашпо. Они деликатно контрастируют с чёткой геометрией светильников и стеклянных фасадов, создавая живую и комфортную композицию.</p>
+                    <h3 class="text-2xl font-medium mb-6">Результат</h3>
+                    <p class="mb-10 leading-relaxed">Получилась квартира с узнаваемым характером: она одновременно напоминает частную галерею современного искусства и уютный дом. Главная удача проекта — в том, что нам удалось отойти от шаблонного понимания luxury как сочетания мрамора и позолоты. Вместо этого роскошь здесь строится на пространстве, свете, тактильности материалов и смелых, но сбалансированных арт-акцентах. </p>
+                    <p class="mb-10 leading-relaxed">Квартира интересна своим масштабом: крупные мебельные формы, монументальные растения, витрины до потолка и графичные постеры создают ощущение уверенности и статуса. При этом тёплая палитра, мягкий текстиль и живые зелёные акценты не позволяют интерьеру превратиться в выставочный зал. Это пространство, которое впечатляет с порога, но раскрывается по-настоящему только когда в нём живёшь.</p>
+                `
+            },
+            {
+                id: 6,
+                title: "Квартира-студия под сдачу в ЖК My Priority",
+                area: "29,38 м²",
+                year: "2026",
+                place: "ЖК My Priority",
+                style: "Современный",
+                img: "https://trace-design.ru/wp-content/uploads/22-13.webp",
+                category: "modern", 
+                floorPlan: "https://trace-design.ru/wp-content/uploads/planirovka-15.webp",
+                visuals: [
+                    "https://trace-design.ru/wp-content/uploads/18-17.webp",
+                    "https://trace-design.ru/wp-content/uploads/19-17.webp",
+                    "https://trace-design.ru/wp-content/uploads/21-15.webp",
+                    "https://trace-design.ru/wp-content/uploads/23-13-scaled.webp",
+                    "https://trace-design.ru/wp-content/uploads/22-13.webp",
+                    "https://trace-design.ru/wp-content/uploads/13-19.webp",
+                    "https://trace-design.ru/wp-content/uploads/14-19.webp",
+                    "https://trace-design.ru/wp-content/uploads/2-20.webp",
+                    "https://trace-design.ru/wp-content/uploads/5-19.webp",
+                    "https://trace-design.ru/wp-content/uploads/6-20.webp",
+                    "https://trace-design.ru/wp-content/uploads/8-20.webp",
+                    "https://trace-design.ru/wp-content/uploads/11-17.webp"
+                ],
+                description: `
+                   <p class="italic text-[#A68A64] mb-8">Проект задумывался как единая эстетическая история для всей квартиры: современная архитектура без визуального шума, тёплая светлая база и выразительные фактуры, которые становятся “декором” сами по себе. Концепция строилась на ощущении спокойствия и уюта — как в хорошем отеле, только в домашней реальности.</p>
+                    <h3 class="text-2xl font-medium mb-6">Запрос клиента</h3>
+                    <p class="mb-10 leading-relaxed">Клиент обратился за дизайном интерьера с чётким запросом на единый стиль по всей квартире — так, чтобы все помещения воспринимались как единое гармоничное пространство. Основной задачей было создать тёплую атмосферу в рамках современного минимализма. Особое внимание требовалось уделить функциональности: продуманной кухне-нише со всей необходимой техникой, удобной мебельной композиции и достаточным системам хранения. Зонирование пространства решили выполнять без дополнительных перегородок, используя свет, фактуры материалов и планировочные акценты.</p>
+                    <h3 class="text-2xl font-medium mb-6">Особенности или сложности проекта</h3>
+                    <p class="mb-10 leading-relaxed">Требовалось сохранить “воздух” и светлоту, хотя присутствуют **контрастные тёмные плоскости** (техника/фасады) — важно было не утяжелить интерьер.</p>
+                    <p class="mb-10 leading-relaxed">Нужно было интегрировать блок кухни и бытовые функции** так, чтобы они выглядели архитектурно, а не как отдельная зона “для готовки”. </p>
+                    <p class="mb-10 leading-relaxed">Визуальный центр квартиры требовал решения, которое заменяет собой классический декор, поэтому акцент был сделан на фактурах и рельефных поверхностях</p>
+                    <h3 class="text-2xl font-medium mb-6">Дизайнерское решение</h3>
+                    <p class="mb-10 leading-relaxed">В основе — светлая нейтральная база стен и текстиля, которую дополняют тёплые оттенки мягкой мебели, создающие ощущение домашнего тепла и уюта. Главным акцентом стала фактурная рельефная панель (или арт-объект) в зоне дивана — она задаёт характер интерьеру, при этом не перегружая пространство.</p>
+                    <p class="mb-10 leading-relaxed">Продуманные световые сценарии с мягким общим освещением, акцентной подсветкой и локальными светильниками, включая торшер с дугой, позволяют вечером сделать атмосферу особенно камерной и уютной.</p>
+                    <p class="mb-10 leading-relaxed">Шторы, подушки и ковёр объединяют все элементы в единую цветовую и тактильную систему, усиливая общее ощущение визуальной мягкости.</p>
+                    <h3 class="text-2xl font-medium mb-6">Результат</h3>
+                    <p class="mb-10 leading-relaxed">Квартира получилась цельной, современной и при этом очень тёплой: она держится не на количестве декора, а на материалах, фактурах и грамотном свете. Крутое решение — сделать интерьер “дорогим” за счёт спокойной базы и выразительных, но сдержанных акцентов, а хранение и технику — максимально интегрировать в архитектуру.</p>
+                `
+            }
+        ]
+
+        // Рендер сетки проектов
+        function renderPortfolio(filteredProjects = allProjects) {
+            const container = document.getElementById('portfolio-grid')
+            container.innerHTML = ''
+
+            filteredProjects.forEach(project => {
+                const cardHTML = `
+                    <div onclick="showProjectDetail(${project.id})" class="project-card group cursor-pointer bg-white border border-[#EDE4D9] overflow-hidden">
+                        <div class="relative">
+                            <img src="${project.img}" 
+                                 class="w-full aspect-[4/3] object-cover transition-all duration-700 group-hover:scale-110">
+                            <div class="absolute top-4 right-4 bg-white text-[#3F2A1E] text-xs font-medium px-4 py-2 rounded-full shadow">
+                                ${project.area}
+                            </div>
+                        </div>
+                        <div class="p-7">
+                            <div class="text-xs uppercase tracking-widest text-[#A68A64] mb-2">${project.year} • ${project.style}</div>
+                            <h3 class="font-medium text-xl leading-tight mb-3 line-clamp-2">${project.title}</h3>
+                            <div class="flex items-center text-[#A68A64] text-sm">
+                                Подробнее 
+                                <span class="ml-3 transition group-hover:translate-x-1 inline-block">→</span>
+                            </div>
+                        </div>
+                    </div>
+                `
+                container.innerHTML += cardHTML
+            })
+        }
+
+        // Показать детальный проект в модальном окне
+        function showProjectDetail(id) {
+            const project = allProjects.find(p => p.id === id)
+            if (!project) return
+
+            const modalContent = document.getElementById('modal-content')
+            const breadcrumb = document.getElementById('modal-breadcrumb')
+            
+            breadcrumb.textContent = `Портфолио / ${project.title}`
+
+            let visualsHTML = ''
+            project.visuals.forEach((url, index) => {
+                visualsHTML += `
+                    <div class="carousel-slide min-w-0 flex-shrink-0 w-full md:w-1/2 lg:w-1/3 px-2">
+                        <img src="${url}" 
+                             class="w-full h-[380px] object-cover rounded-2xl shadow-md">
+                    </div>
+                `
+            })
+
+            const modalHTML = `
+                <div class="p-8 md:p-12">
+                    <!-- ВЕРХНИЙ БЛОК (как на скриншоте) -->
+                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-16">
+                        <!-- Левая колонка с информацией (тёмная) -->
+                        <div class="lg:col-span-2 bg-[#3F2A1E] text-white p-10 rounded-3xl">
+                            <h1 class="text-4xl leading-tight font-serif tracking-tight mb-12">${project.title}</h1>
+                            
+                            <div class="space-y-10">
+                                <div class="flex gap-6">
+                                    <div>
+                                        <div class="uppercase text-[#A68A64] text-xs tracking-widest mb-1">ГОД</div>
+                                        <div class="text-3xl">${project.year}</div>
+                                    </div>
+                                    <div>
+                                        <div class="uppercase text-[#A68A64] text-xs tracking-widest mb-1">ПЛОЩАДЬ</div>
+                                        <div class="text-3xl">${project.area}</div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div class="uppercase text-[#A68A64] text-xs tracking-widest mb-1">МЕСТО</div>
+                                    <div class="text-xl">${project.place}</div>
+                                </div>
+                                
+                                <div>
+                                    <div class="uppercase text-[#A68A64] text-xs tracking-widest mb-1">СТИЛЬ</div>
+                                    <div class="text-xl">${project.style}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-auto pt-12 border-t border-white/20 text-xs opacity-60">
+                                Trace Design © 2026
+                            </div>
+                        </div>
+                        
+                        <!-- Правая колонка — главное фото -->
+                        <div class="lg:col-span-3">
+                            <img src="${project.img}" 
+                                 class="w-full h-full object-cover rounded-3xl shadow-2xl" 
+                                 style="aspect-ratio: 16 / 13;">
+                        </div>
+                    </div>
+
+                    <!-- ПЛАНИРОВОЧНОЕ РЕШЕНИЕ -->
+                    <div class="mb-20">
+                        <div class="flex items-center gap-4 mb-8">
+                            <div class="h-px flex-1 bg-gradient-to-r from-transparent via-[#A68A64]/30 to-transparent"></div>
+                            <h2 class="section-header text-4xl text-center px-8">Планировочное решение</h2>
+                            <div class="h-px flex-1 bg-gradient-to-r from-transparent via-[#A68A64]/30 to-transparent"></div>
+                        </div>
+                        <div class="bg-[#F5F0E8] p-6 rounded-3xl">
+                            <img src="${project.floorPlan}" 
+                                 class="mx-auto rounded-2xl shadow-inner max-h-[520px] w-auto" 
+                                 alt="Планировочное решение">
+                        </div>
+                    </div>
+
+                    <!-- ВИЗУАЛИЗАЦИИ (КАРУСЕЛЬ) -->
+                    <div class="mb-20">
+                        <div class="flex items-center justify-between mb-8">
+                            <h2 class="section-header text-4xl">Визуализации</h2>
+                            <div class="flex items-center gap-4 text-sm">
+                                <button onclick="prevSlide()" 
+                                        class="w-10 h-10 border border-[#3F2A1E]/30 hover:border-[#3F2A1E] rounded-2xl flex items-center justify-center transition">
+                                    ←
+                                </button>
+                                <button onclick="nextSlide()" 
+                                        class="w-10 h-10 border border-[#3F2A1E]/30 hover:border-[#3F2A1E] rounded-2xl flex items-center justify-center transition">
+                                    →
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="visuals-carousel" 
+                             class="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory scrollbar-hide">
+                            ${visualsHTML}
+                        </div>
+                        <div class="text-center text-xs text-[#A68A64] mt-2 tracking-widest">НАЖМИТЕ СТРЕЛКИ • ${project.visuals.length} ИЗОБРАЖЕНИЙ</div>
+                    </div>
+
+                    <!-- ТЕКСТОВАЯ ЧАСТЬ -->
+                    <div class="max-w-3xl mx-auto">
+                        ${project.description}
+                    </div>
+
+                    <!-- КНОПКИ В КОНЦЕ -->
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center mt-20">
+                        <button onclick="closeProjectModal()" 
+                                class="px-16 py-6 border border-[#3F2A1E] hover:bg-[#3F2A1E] hover:text-white transition text-sm uppercase tracking-widest">
+                            Закрыть
+                        </button>
+                        <button onclick="openContactModalFromProject()" 
+                                class="px-16 py-6 bg-[#3F2A1E] text-white hover:bg-[#A68A64] transition text-sm uppercase tracking-widest">
+                            ОБСУДИТЬ ВАШ ПРОЕКТ
+                        </button>
+                    </div>
+                </div>
+            `
+
+            modalContent.innerHTML = modalHTML
+            document.getElementById('projectModal').classList.remove('hidden')
+            document.getElementById('projectModal').classList.add('flex')
+            
+            // Сброс карусели
+            setTimeout(() => {
+                const carousel = document.getElementById('visuals-carousel')
+                if (carousel) carousel.scrollLeft = 0
+            }, 300)
+        }
+
+        let currentSlideIndex = 0
+
+        function prevSlide() {
+            const carousel = document.getElementById('visuals-carousel')
+            if (!carousel) return
+            currentSlideIndex = Math.max(0, currentSlideIndex - 1)
+            carousel.scrollBy({ left: -380, behavior: 'smooth' })
+        }
+
+        function nextSlide() {
+            const carousel = document.getElementById('visuals-carousel')
+            if (!carousel) return
+            currentSlideIndex = Math.min(5, currentSlideIndex + 1)
+            carousel.scrollBy({ left: 380, behavior: 'smooth' })
+        }
+
+        function closeProjectModal() {
+            const modal = document.getElementById('projectModal')
+            modal.classList.add('hidden')
+            modal.classList.remove('flex')
+        }
+
+        function filterProjects(category) {
+            // Убираем активный класс у всех кнопок
+            document.querySelectorAll('#filters button').forEach(btn => {
+                btn.classList.remove('active-filter', 'border-[#3F2A1E]', 'bg-[#3F2A1E]', 'text-white')
+                if (btn.getAttribute('onclick').includes(category)) {
+                    btn.classList.add('active-filter', 'border-[#3F2A1E]', 'bg-[#3F2A1E]', 'text-white')
+                }
+            })
+            
+            if (category === 'all') {
+                renderPortfolio(allProjects)
+            } else {
+                const filtered = allProjects.filter(p => p.category === category)
+                renderPortfolio(filtered)
+            }
+        }
+
+        function showAllProjects() {
+            renderPortfolio(allProjects)
+            // Сброс фильтров
+            document.querySelectorAll('#filters button').forEach((btn, index) => {
+                if (index === 0) btn.classList.add('active-filter', 'border-[#3F2A1E]', 'bg-[#3F2A1E]', 'text-white')
+                else btn.classList.remove('active-filter', 'border-[#3F2A1E]', 'bg-[#3F2A1E]', 'text-white')
+            })
+        }
+
+        function openContactModal() {
+            document.getElementById('contactModal').classList.remove('hidden')
+            document.getElementById('contactModal').classList.add('flex')
+        }
+
+        function closeContactModal() {
+            const modal = document.getElementById('contactModal')
+            modal.classList.add('hidden')
+            modal.classList.remove('flex')
+        }
+
+        function openContactModalFromProject() {
+            closeProjectModal()
+            setTimeout(() => {
+                openContactModal()
+            }, 400)
+        }
+
+        function submitApplication(e) {
+            e.preventDefault()
+            alert('Заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время.')
+            closeContactModal()
+        }
+
+        function toggleMobileMenu() {
+            alert('Мобильное меню открыто (в реальной версии здесь будет боковая панель)')
+        }
+
+        // Инициализация
+        window.onload = () => {
+            initTailwind()
+            renderPortfolio()
+            
+            // Добавляем стили для скрытия скроллбара в карусели
+            const style = document.createElement('style')
+            style.innerHTML = `
+                .scrollbar-hide::-webkit-scrollbar {
+                    display: none;
+                }
+                .scrollbar-hide {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+                .line-clamp-2 {
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+            `
+            document.head.appendChild(style)
+            
+            console.log('%c✅ Портфолио Trace Design успешно загружено. 6 проектов с детальными модальными окнами. Дизайн полностью соответствует главной странице.', 'color:#A68A64; font-size:14px; font-family:monospace')
+        }
+    </script>
+</body>
+</html>
