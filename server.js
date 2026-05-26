@@ -63,7 +63,7 @@ app.post('/api/login', (req, res) => {
         const match = await bcrypt.compare(password, user.password);
         if (!match) return res.status(401).json({ error: 'Неверный пароль' });
         const token = jwt.sign({ id: user.id, role: user.role, name: user.name }, SECRET);
-res.json({ token, role: user.role, name: user.name, id: user.id });
+        res.json({ token, role: user.role, name: user.name, id: user.id });
     });
 });
 
@@ -105,22 +105,22 @@ app.get('/api/applications', (req, res) => {
         res.json(results);
     });
 });
+
+// Получить файлы
+app.get('/api/files', (req, res) => {
+    const client_id = req.query.client_id;
+    const role = req.query.role;
     let query = 'SELECT * FROM files ORDER BY created_at DESC';
     let params = [];
-
-    // Клиент видит только свои файлы
     if (role !== 'manager') {
         query = 'SELECT * FROM files WHERE client_id = ? ORDER BY created_at DESC';
         params = [client_id];
     }
-
     db.query(query, params, (err, results) => {
         if (err) return res.status(500).json({ error: 'Ошибка' });
         res.json(results);
     });
-
-
-
+});
 
 app.listen(3000, () => {
     console.log('Сервер запущен на http://localhost:3000');
