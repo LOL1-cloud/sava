@@ -149,7 +149,7 @@
             const data = await res.json();
             if (data.error) return alert(data.error);
 
-            currentUser = { token: data.token, role: data.role, name: data.name };
+            currentUser = { token: data.token, role: data.role, name: data.name, id: data.id };
             localStorage.setItem('traceCurrentUser', JSON.stringify(currentUser));
             showCabinet();
         }

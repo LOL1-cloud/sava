@@ -63,7 +63,7 @@ app.post('/api/login', (req, res) => {
         const match = await bcrypt.compare(password, user.password);
         if (!match) return res.status(401).json({ error: 'Неверный пароль' });
         const token = jwt.sign({ id: user.id, role: user.role, name: user.name }, SECRET);
-        res.json({ token, role: user.role, name: user.name });
+res.json({ token, role: user.role, name: user.name, id: user.id });
     });
 });
 
