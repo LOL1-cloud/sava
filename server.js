@@ -118,15 +118,9 @@ app.get('/api/applications', (req, res) => {
         if (err) return res.status(500).json({ error: 'Ошибка' });
         res.json(results);
     });
-});
 
-// Получить файлы (для менеджера)
-app.get('/api/files', (req, res) => {
-    db.query('SELECT * FROM files ORDER BY created_at DESC', (err, results) => {
-        if (err) return res.status(500).json({ error: 'Ошибка' });
-        res.json(results);
-    });
-});
+
+
 
 app.listen(3000, () => {
     console.log('Сервер запущен на http://localhost:3000');
