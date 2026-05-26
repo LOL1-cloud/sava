@@ -223,7 +223,7 @@
 
         // Кабинет клиента - документы
         async function renderDocuments() {
-            const res = await fetch(`${API}/api/files`);
+    const res = await fetch(`${API}/api/files?client_id=${currentUser.id}&role=${currentUser.role}`);
             const files = await res.json();
             const container = document.getElementById('documents-list');
             const noDoc = document.getElementById('no-documents');

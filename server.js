@@ -99,8 +99,20 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
 });
 
 // Получить заявки (для менеджера)
-app.get('/api/applications', (req, res) => {
-    db.query('SELECT * FROM applications ORDER BY created_at DESC', (err, results) => {
+app.get('/api/files', (req, res) => {
+    const client_id = req.query.client_id;
+    const role = req.query.role;
+
+    let query = 'SELECT * FROM files ORDER BY created_at DESC';
+    let params = [];
+
+    // Клиент видит только свои файлы
+    if (role !== 'manager') {
+        query = 'SELECT * FROM files WHERE client_id = ? ORDER BY created_at DESC';
+        params = [client_id];
+    }
+
+    db.query(query, params, (err, results) => {
         if (err) return res.status(500).json({ error: 'Ошибка' });
         res.json(results);
     });
