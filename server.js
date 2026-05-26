@@ -99,10 +99,12 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
 });
 
 // Получить заявки (для менеджера)
-app.get('/api/files', (req, res) => {
-    const client_id = req.query.client_id;
-    const role = req.query.role;
-
+app.get('/api/applications', (req, res) => {
+    db.query('SELECT * FROM applications ORDER BY created_at DESC', (err, results) => {
+        if (err) return res.status(500).json({ error: 'Ошибка' });
+        res.json(results);
+    });
+});
     let query = 'SELECT * FROM files ORDER BY created_at DESC';
     let params = [];
 
