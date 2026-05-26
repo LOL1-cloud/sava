@@ -17,7 +17,8 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 app.get('/:page', (req, res) => {
-    res.sendFile(path.join(__dirname, req.params.page));
+    const page = req.params.page.toLowerCase();
+    res.sendFile(path.join(__dirname, page));
 });
 
 // Загруженные файлы

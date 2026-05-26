@@ -184,7 +184,7 @@
             const appsRes = await fetch(`${API}/api/applications`);
             const apps = await appsRes.json();
 
-            const filesRes = await fetch(`${API}/api/files`);
+            const filesRes = await fetch(`${API}/api/files?role=manager`);
             const files = await filesRes.json();
 
             // Заявки
