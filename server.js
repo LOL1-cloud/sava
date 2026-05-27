@@ -81,15 +81,27 @@ app.post('/api/applications', (req, res) => {
 });
 
 // Загрузка файлов
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, 'uploads/'),
-    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
+cloudinary.config({
+    cloud_name: 'dfixnp8vd',
+    api_key: '563333494145371',
+    api_secret: 'X3rNmL584M8qgcmMJndWbWmVP2g'
+});
+
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'trace-uploads',
+        resource_type: 'auto'
+    }
 });
 const upload = multer({ storage });
 
 app.post('/api/upload', upload.single('file'), (req, res) => {
     const { client_id } = req.body;
-    const filepath = '/uploads/' + req.file.filename;
+    const filepath = req.file.path;
     db.query('INSERT INTO files (client_id, filename, filepath) VALUES (?, ?, ?)',
         [client_id, req.file.originalname, filepath],
         (err) => {
