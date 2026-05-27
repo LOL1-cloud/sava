@@ -9,7 +9,6 @@
     <style>
         .tail-container { max-width: 1280px; margin: 0 auto; }
         .hero-font { font-family: serif; }
-        .card-hover:hover { transform: translateY(-4px); transition: all 0.3s; }
     </style>
 </head>
 <body class="bg-[#F5F0E8] text-[#3F2A1E] font-light">
@@ -34,8 +33,7 @@
         <div id="auth-section">
             <div class="max-w-md mx-auto bg-white shadow-md rounded-3xl p-10">
                 <h1 class="text-4xl hero-font mb-2 text-center">Личный кабинет</h1>
-                <p id="auth-title" class="text-center text-[#A68A64] mb-8">Войдите в аккаунт</p>
-
+                <p class="text-center text-[#A68A64] mb-8">Войдите в аккаунт</p>
                 <div id="login-form">
                     <div class="space-y-6">
                         <input id="login-email" type="email" placeholder="Email" class="w-full border-b border-[#3F2A1E]/30 py-4 focus:outline-none bg-transparent">
@@ -44,7 +42,6 @@
                         <p class="text-center text-sm">Нет аккаунта? <span onclick="switchToRegister()" class="text-[#A68A64] cursor-pointer hover:underline">Зарегистрироваться</span></p>
                     </div>
                 </div>
-
                 <div id="register-form" class="hidden">
                     <div class="space-y-6">
                         <input id="reg-name" type="text" placeholder="ФИО" class="w-full border-b border-[#3F2A1E]/30 py-4 focus:outline-none bg-transparent">
@@ -61,7 +58,7 @@
             <div class="flex justify-between items-end mb-8">
                 <div>
                     <h1 class="text-3xl md:text-5xl hero-font">Добро пожаловать, <span id="user-name" class="text-[#A68A64]"></span></h1>
-                    <p id="user-role-badge" class="text-[#6B5D4B] text-sm mt-1">Личный кабинет</p>
+                    <p id="user-role-badge" class="text-[#6B5D4B] text-sm mt-1"></p>
                 </div>
                 <button onclick="logout()" class="px-8 py-3 border border-[#3F2A1E] hover:bg-[#3F2A1E] hover:text-white transition text-sm uppercase tracking-widest">Выйти</button>
             </div>
@@ -162,51 +159,74 @@
             const badge = document.getElementById('user-role-badge');
             if (currentUser.role === 'manager') {
                 badge.textContent = '👔 Панель менеджера';
-                document.getElementById('projects-title').textContent = 'Заявки клиентов';
+                document.getElementById('projects-title').textContent = 'Заявки и проекты клиентов';
                 document.getElementById('upload-btn').classList.add('hidden');
                 renderManagerPanel();
             } else {
                 badge.textContent = 'Личный кабинет Клиента';
-                renderDocuments();
+                renderClientPanel();
             }
         }
 
-        async function renderManagerPanel() {
-            const appsRes = await fetch(`${API}/api/applications`);
-            const apps = await appsRes.json();
-            const filesRes = await fetch(`${API}/api/files?role=manager`);
-            const files = await filesRes.json();
+        // ===== КЛИЕНТ =====
+        async function renderClientPanel() {
+            await renderProjects();
+            await renderDocuments();
+        }
 
-            const projectsList = document.getElementById('projects-list');
-            if (apps.length === 0) {
-                projectsList.innerHTML = '<p class="text-gray-400 text-center py-6">Заявок пока нет</p>';
-            } else {
-                projectsList.innerHTML = apps.map(a => `
+        async function renderProjects() {
+            const res = await fetch(`${API}/api/projects?client_id=${currentUser.id}&role=${currentUser.role}`);
+            const projects = await res.json();
+            const container = document.getElementById('projects-list');
+
+            if (projects.length === 0) {
+                container.innerHTML = '<p class="text-gray-400 text-center py-6">Нет активных проектов. Создайте заявку кнопкой "Написать нам".</p>';
+                return;
+            }
+
+            container.innerHTML = projects.map(p => {
+                const unpaid = p.budget - p.paid;
+                let btn = '';
+                if (p.status === 'Согласование договора') {
+                    btn = `<button onclick="signContract(${p.id})" class="mt-3 bg-green-700 text-white text-xs px-4 py-2 rounded-xl">Подписать договор</button>`;
+                } else if (p.status === 'В разработке' && unpaid > 0) {
+                    btn = `<button onclick="payProject(${p.id}, ${p.budget})" class="mt-3 bg-[#A68A64] text-white text-xs px-4 py-2 rounded-xl">Оплатить остаток (${unpaid.toLocaleString('ru-RU')} ₽)</button>`;
+                }
+                return `
                     <div class="bg-[#F5F0E8] p-5 rounded-2xl border border-[#EDE4D7]">
-                        <p class="font-medium text-lg">${a.name}</p>
-                        <p class="text-sm text-gray-500 mt-1">📞 ${a.phone}</p>
-                        <p class="text-sm text-gray-500">🏠 ${a.type} • ${a.area} м²</p>
-                        <p class="text-xs text-gray-400 mt-2">${new Date(a.created_at).toLocaleDateString('ru-RU')}</p>
-                    </div>
-                `).join('');
-            }
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-serif text-lg">${p.type} (${p.area} м²)</h4>
+                            <span class="text-xs bg-[#3F2A1E] text-white px-3 py-1 rounded-full">${p.status}</span>
+                        </div>
+                        <p class="text-xs text-gray-400">ID: ${p.id}</p>
+                        <div class="grid grid-cols-3 gap-2 mt-3 text-center text-xs bg-white p-3 rounded-xl">
+                            <div><p class="text-gray-400">Бюджет</p><p class="font-bold">${p.budget.toLocaleString('ru-RU')} ₽</p></div>
+                            <div><p class="text-green-600">Оплачено</p><p class="font-bold text-green-600">${p.paid.toLocaleString('ru-RU')} ₽</p></div>
+                            <div><p class="text-red-500">Остаток</p><p class="font-bold text-red-500">${unpaid.toLocaleString('ru-RU')} ₽</p></div>
+                        </div>
+                        ${btn}
+                    </div>`;
+            }).join('');
+        }
 
-            const docsContainer = document.getElementById('documents-list');
-            const noDoc = document.getElementById('no-documents');
-            if (files.length === 0) {
-                noDoc.classList.remove('hidden');
-                docsContainer.innerHTML = '';
-            } else {
-                noDoc.classList.add('hidden');
-                docsContainer.innerHTML = files.map(f => `
-                    <div class="bg-[#F5F0E8] p-3 rounded-xl flex justify-between items-center text-xs">
-                        <div><p class="font-medium">${f.filename}</p></div>
-                        <a href="${f.filepath}" target="_blank">
-                            <i class="fa-solid fa-download text-[#A68A64] cursor-pointer"></i>
-                        </a>
-                    </div>
-                `).join('');
-            }
+        async function signContract(id) {
+            await fetch(`${API}/api/projects/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'В разработке' })
+            });
+            alert('Договор подписан!');
+            renderProjects();
+        }
+
+        async function payProject(id, budget) {
+            await fetch(`${API}/api/projects/${id}/pay`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paid: budget })
+            });
+            alert('Оплата зачислена!');
+            renderProjects();
         }
 
         async function renderDocuments() {
@@ -237,18 +257,103 @@
                 const file = input.files[0];
                 const formData = new FormData();
                 formData.append('file', file);
-                formData.append('client_id', currentUser.id || 1);
-                const res = await fetch(`${API}/api/upload`, {
-                    method: 'POST',
-                    body: formData
-                });
+                formData.append('client_id', currentUser.id);
+                const res = await fetch(`${API}/api/upload`, { method: 'POST', body: formData });
                 const data = await res.json();
-                if (data.success) {
-                    alert('Файл загружен!');
-                    renderDocuments();
-                }
+                if (data.success) { alert('Файл загружен!'); renderDocuments(); }
             };
             input.click();
+        }
+
+        // ===== МЕНЕДЖЕР =====
+        async function renderManagerPanel() {
+            const appsRes = await fetch(`${API}/api/applications`);
+            const apps = await appsRes.json();
+            const projRes = await fetch(`${API}/api/projects?role=manager`);
+            const projects = await projRes.json();
+            const filesRes = await fetch(`${API}/api/files?role=manager`);
+            const files = await filesRes.json();
+
+            const container = document.getElementById('projects-list');
+
+            let html = '';
+
+            // Заявки
+            if (apps.length > 0) {
+                html += '<h4 class="font-serif text-lg mb-3 text-[#A68A64]">Новые заявки</h4>';
+                html += apps.map(a => `
+                    <div class="bg-[#F5F0E8] p-5 rounded-2xl border border-[#EDE4D7] mb-3">
+                        <p class="font-medium text-lg">${a.name}</p>
+                        <p class="text-sm text-gray-500 mt-1">📞 ${a.phone}</p>
+                        <p class="text-sm text-gray-500">🏠 ${a.type} • ${a.area} м²</p>
+                        <p class="text-xs text-gray-400 mt-1">${new Date(a.created_at).toLocaleDateString('ru-RU')}</p>
+                        <button onclick="createProject(${a.client_id}, '${a.type}', ${a.area})" class="mt-3 bg-[#3F2A1E] text-white text-xs px-4 py-2 rounded-xl hover:bg-[#A68A64]">
+                            Создать проект
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            // Проекты
+            if (projects.length > 0) {
+                html += '<h4 class="font-serif text-lg mb-3 mt-6 text-[#A68A64]">Активные проекты</h4>';
+                html += projects.map(p => `
+                    <div class="bg-[#F5F0E8] p-5 rounded-2xl border border-[#EDE4D7] mb-3">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-serif">${p.type} (${p.area} м²)</h4>
+                            <span class="text-xs bg-[#3F2A1E] text-white px-3 py-1 rounded-full">${p.status}</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mb-3">ID клиента: ${p.client_id}</p>
+                        <select onchange="updateStatus(${p.id}, this.value)" class="w-full border border-[#EDE4D7] rounded-xl px-3 py-2 text-sm bg-white">
+                            <option ${p.status === 'Обсуждение' ? 'selected' : ''}>Обсуждение</option>
+                            <option ${p.status === 'Согласование договора' ? 'selected' : ''}>Согласование договора</option>
+                            <option ${p.status === 'В разработке' ? 'selected' : ''}>В разработке</option>
+                            <option ${p.status === 'Завершён' ? 'selected' : ''}>Завершён</option>
+                        </select>
+                    </div>
+                `).join('');
+            }
+
+            if (!html) html = '<p class="text-gray-400 text-center py-6">Заявок и проектов пока нет</p>';
+            container.innerHTML = html;
+
+            // Файлы
+            const docsContainer = document.getElementById('documents-list');
+            const noDoc = document.getElementById('no-documents');
+            if (files.length === 0) {
+                noDoc.classList.remove('hidden');
+                docsContainer.innerHTML = '';
+            } else {
+                noDoc.classList.add('hidden');
+                docsContainer.innerHTML = files.map(f => `
+                    <div class="bg-[#F5F0E8] p-3 rounded-xl flex justify-between items-center text-xs">
+                        <div><p class="font-medium">${f.filename}</p></div>
+                        <a href="${f.filepath}" target="_blank">
+                            <i class="fa-solid fa-download text-[#A68A64] cursor-pointer"></i>
+                        </a>
+                    </div>
+                `).join('');
+            }
+        }
+
+        async function createProject(client_id, type, area) {
+            const budget = area * 4000;
+            const res = await fetch(`${API}/api/projects`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ client_id, type, area, budget })
+            });
+            const data = await res.json();
+            if (data.success) { alert('Проект создан!'); renderManagerPanel(); }
+        }
+
+        async function updateStatus(id, status) {
+            await fetch(`${API}/api/projects/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            });
+            alert(`Статус обновлён: ${status}`);
         }
 
         function openContactModal() { document.getElementById('contactModal').classList.remove('hidden'); }
@@ -265,14 +370,11 @@
                     phone: document.getElementById('app-phone').value,
                     area: document.getElementById('app-area').value,
                     type: document.getElementById('app-type').value,
-                    client_id: currentUser.id || 1
+                    client_id: currentUser.id
                 })
             });
             const data = await res.json();
-            if (data.success) {
-                alert('Заявка отправлена! Менеджер свяжется с вами.');
-                closeContactModal();
-            }
+            if (data.success) { alert('Заявка отправлена! Менеджер свяжется с вами.'); closeContactModal(); }
         }
 
         window.onload = () => {

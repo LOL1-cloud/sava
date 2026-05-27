@@ -174,6 +174,18 @@ app.put('/api/projects/:id', (req, res) => {
     );
 });
 
+// Оплатить проект
+app.put('/api/projects/:id/pay', (req, res) => {
+    const { paid } = req.body;
+    db.query('UPDATE projects SET paid = ? WHERE id = ?',
+        [paid, req.params.id],
+        (err) => {
+            if (err) return res.status(500).json({ error: 'Ошибка' });
+            res.json({ success: true });
+        }
+    );
+});
+
 app.listen(3000, () => {
     console.log('Сервер запущен на http://localhost:3000');
 });
