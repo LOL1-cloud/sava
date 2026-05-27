@@ -80,7 +80,7 @@ app.post('/api/applications', (req, res) => {
     );
 });
 
-// Загрузка файлов
+// Загрузка файлов через Cloudinary
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
@@ -135,34 +135,48 @@ app.get('/api/files', (req, res) => {
     });
 });
 
-// Создать проект
+// Создать проект — назначает случайного дизайнера
 app.post('/api/projects', (req, res) => {
     const { client_id, type, area, budget } = req.body;
-    db.query('INSERT INTO projects (client_id, type, area, budget) VALUES (?, ?, ?, ?)',
-        [client_id, type, area, budget],
-        (err, result) => {
-            if (err) return res.status(500).json({ error: 'Ошибка' });
-            res.json({ success: true, id: result.insertId });
-        }
-    );
+
+    db.query("SELECT id FROM users WHERE role = 'manager' AND email != 'veronika@trace.ru'", (err, managers) => {
+        if (err || managers.length === 0) return res.status(500).json({ error: 'Нет дизайнеров' });
+
+        const randomManager = managers[Math.floor(Math.random() * managers.length)];
+
+        db.query('INSERT INTO projects (client_id, manager_id, type, area, budget) VALUES (?, ?, ?, ?, ?)',
+            [client_id, randomManager.id, type, area, budget],
+            (err, result) => {
+                if (err) return res.status(500).json({ error: 'Ошибка' });
+                res.json({ success: true, id: result.insertId, manager_id: randomManager.id });
+            }
+        );
+    });
 });
 
-// Получить проекты клиента
+// Получить проекты
 app.get('/api/projects', (req, res) => {
-    const { client_id, role } = req.query;
-    let query = 'SELECT * FROM projects ORDER BY created_at DESC';
-    let params = [];
-    if (role !== 'manager') {
+    const { client_id, role, manager_id } = req.query;
+    let query, params;
+
+    if (role === 'manager' && manager_id) {
+        query = 'SELECT * FROM projects WHERE manager_id = ? ORDER BY created_at DESC';
+        params = [manager_id];
+    } else if (role === 'director') {
+        query = 'SELECT * FROM projects ORDER BY created_at DESC';
+        params = [];
+    } else {
         query = 'SELECT * FROM projects WHERE client_id = ? ORDER BY created_at DESC';
         params = [client_id];
     }
+
     db.query(query, params, (err, results) => {
         if (err) return res.status(500).json({ error: 'Ошибка' });
         res.json(results);
     });
 });
 
-// Обновить статус проекта (для менеджера)
+// Обновить статус проекта
 app.put('/api/projects/:id', (req, res) => {
     const { status } = req.body;
     db.query('UPDATE projects SET status = ? WHERE id = ?',
