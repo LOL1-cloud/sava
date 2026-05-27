@@ -29,7 +29,6 @@
     </header>
 
     <div class="pt-28 pb-16 tail-container px-6 min-h-screen">
-
         <div id="auth-section">
             <div class="max-w-md mx-auto bg-white shadow-md rounded-3xl p-10">
                 <h1 class="text-4xl hero-font mb-2 text-center">Личный кабинет</h1>
@@ -68,7 +67,6 @@
                     <h3 class="text-2xl hero-font mb-6" id="projects-title">Мои проекты</h3>
                     <div id="projects-list" class="space-y-4"></div>
                 </div>
-
                 <div class="lg:col-span-5 bg-white rounded-3xl shadow-sm p-10">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-2xl hero-font">Документы</h3>
@@ -162,6 +160,11 @@
                 document.getElementById('projects-title').textContent = 'Заявки и проекты клиентов';
                 document.getElementById('upload-btn').classList.add('hidden');
                 renderManagerPanel();
+            } else if (currentUser.role === 'director') {
+                badge.textContent = '👑 Генеральный директор';
+                document.getElementById('projects-title').textContent = 'Все проекты';
+                document.getElementById('upload-btn').classList.add('hidden');
+                renderDirectorPanel();
             } else {
                 badge.textContent = 'Личный кабинет Клиента';
                 renderClientPanel();
@@ -178,12 +181,10 @@
             const res = await fetch(`${API}/api/projects?client_id=${currentUser.id}&role=${currentUser.role}`);
             const projects = await res.json();
             const container = document.getElementById('projects-list');
-
             if (projects.length === 0) {
                 container.innerHTML = '<p class="text-gray-400 text-center py-6">Нет активных проектов. Создайте заявку кнопкой "Написать нам".</p>';
                 return;
             }
-
             container.innerHTML = projects.map(p => {
                 const unpaid = p.budget - p.paid;
                 let btn = '';
@@ -245,8 +246,7 @@
                         <a href="${f.filepath}" target="_blank">
                             <i class="fa-solid fa-download text-[#A68A64] cursor-pointer"></i>
                         </a>
-                    </div>
-                `).join('');
+                    </div>`).join('');
             }
         }
 
@@ -267,7 +267,7 @@
 
         // ===== МЕНЕДЖЕР =====
         async function renderManagerPanel() {
-            const appsRes = await fetch(`${API}/api/applications`);
+            const appsRes = await fetch(`${API}/api/applications?manager_id=${currentUser.id}&role=${currentUser.role}`);
             const apps = await appsRes.json();
             const projRes = await fetch(`${API}/api/projects?role=manager&manager_id=${currentUser.id}`);
             const projects = await projRes.json();
@@ -275,10 +275,8 @@
             const files = await filesRes.json();
 
             const container = document.getElementById('projects-list');
-
             let html = '';
 
-            // Заявки
             if (apps.length > 0) {
                 html += '<h4 class="font-serif text-lg mb-3 text-[#A68A64]">Новые заявки</h4>';
                 html += apps.map(a => `
@@ -287,14 +285,12 @@
                         <p class="text-sm text-gray-500 mt-1">📞 ${a.phone}</p>
                         <p class="text-sm text-gray-500">🏠 ${a.type} • ${a.area} м²</p>
                         <p class="text-xs text-gray-400 mt-1">${new Date(a.created_at).toLocaleDateString('ru-RU')}</p>
-                        <button onclick="createProject(${a.client_id}, '${a.type}', ${a.area})" class="mt-3 bg-[#3F2A1E] text-white text-xs px-4 py-2 rounded-xl hover:bg-[#A68A64]">
+                        <button onclick="createProject(${a.client_id}, '${a.type}', ${a.area}, ${currentUser.id})" class="mt-3 bg-[#3F2A1E] text-white text-xs px-4 py-2 rounded-xl hover:bg-[#A68A64]">
                             Создать проект
                         </button>
-                    </div>
-                `).join('');
+                    </div>`).join('');
             }
 
-            // Проекты
             if (projects.length > 0) {
                 html += '<h4 class="font-serif text-lg mb-3 mt-6 text-[#A68A64]">Активные проекты</h4>';
                 html += projects.map(p => `
@@ -310,14 +306,12 @@
                             <option ${p.status === 'В разработке' ? 'selected' : ''}>В разработке</option>
                             <option ${p.status === 'Завершён' ? 'selected' : ''}>Завершён</option>
                         </select>
-                    </div>
-                `).join('');
+                    </div>`).join('');
             }
 
             if (!html) html = '<p class="text-gray-400 text-center py-6">Заявок и проектов пока нет</p>';
             container.innerHTML = html;
 
-            // Файлы
             const docsContainer = document.getElementById('documents-list');
             const noDoc = document.getElementById('no-documents');
             if (files.length === 0) {
@@ -331,17 +325,75 @@
                         <a href="${f.filepath}" target="_blank">
                             <i class="fa-solid fa-download text-[#A68A64] cursor-pointer"></i>
                         </a>
-                    </div>
-                `).join('');
+                    </div>`).join('');
             }
         }
 
-        async function createProject(client_id, type, area) {
+        // ===== ГЕНДИР =====
+        async function renderDirectorPanel() {
+            const appsRes = await fetch(`${API}/api/applications?role=director`);
+            const apps = await appsRes.json();
+            const projRes = await fetch(`${API}/api/projects?role=director`);
+            const projects = await projRes.json();
+            const filesRes = await fetch(`${API}/api/files?role=manager`);
+            const files = await filesRes.json();
+
+            const container = document.getElementById('projects-list');
+            let html = '';
+
+            if (apps.length > 0) {
+                html += '<h4 class="font-serif text-lg mb-3 text-[#A68A64]">Все заявки</h4>';
+                html += apps.map(a => `
+                    <div class="bg-[#F5F0E8] p-5 rounded-2xl border border-[#EDE4D7] mb-3">
+                        <p class="font-medium text-lg">${a.name}</p>
+                        <p class="text-sm text-gray-500 mt-1">📞 ${a.phone}</p>
+                        <p class="text-sm text-gray-500">🏠 ${a.type} • ${a.area} м²</p>
+                        <p class="text-xs text-gray-400 mt-1">${new Date(a.created_at).toLocaleDateString('ru-RU')}</p>
+                    </div>`).join('');
+            }
+
+            if (projects.length > 0) {
+                html += '<h4 class="font-serif text-lg mb-3 mt-6 text-[#A68A64]">Все проекты</h4>';
+                html += projects.map(p => `
+                    <div class="bg-[#F5F0E8] p-5 rounded-2xl border border-[#EDE4D7] mb-3">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-serif">${p.type} (${p.area} м²)</h4>
+                            <span class="text-xs bg-[#3F2A1E] text-white px-3 py-1 rounded-full">${p.status}</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 mt-2 text-center text-xs bg-white p-3 rounded-xl">
+                            <div><p class="text-gray-400">Бюджет</p><p class="font-bold">${p.budget.toLocaleString('ru-RU')} ₽</p></div>
+                            <div><p class="text-green-600">Оплачено</p><p class="font-bold text-green-600">${p.paid.toLocaleString('ru-RU')} ₽</p></div>
+                            <div><p class="text-red-500">Остаток</p><p class="font-bold text-red-500">${(p.budget - p.paid).toLocaleString('ru-RU')} ₽</p></div>
+                        </div>
+                    </div>`).join('');
+            }
+
+            if (!html) html = '<p class="text-gray-400 text-center py-6">Данных пока нет</p>';
+            container.innerHTML = html;
+
+            const docsContainer = document.getElementById('documents-list');
+            const noDoc = document.getElementById('no-documents');
+            if (files.length === 0) {
+                noDoc.classList.remove('hidden');
+                docsContainer.innerHTML = '';
+            } else {
+                noDoc.classList.add('hidden');
+                docsContainer.innerHTML = files.map(f => `
+                    <div class="bg-[#F5F0E8] p-3 rounded-xl flex justify-between items-center text-xs">
+                        <div><p class="font-medium">${f.filename}</p></div>
+                        <a href="${f.filepath}" target="_blank">
+                            <i class="fa-solid fa-download text-[#A68A64] cursor-pointer"></i>
+                        </a>
+                    </div>`).join('');
+            }
+        }
+
+        async function createProject(client_id, type, area, manager_id) {
             const budget = area * 4000;
             const res = await fetch(`${API}/api/projects`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ client_id, type, area, budget })
+                body: JSON.stringify({ client_id, type, area, budget, manager_id })
             });
             const data = await res.json();
             if (data.success) { alert('Проект создан!'); renderManagerPanel(); }

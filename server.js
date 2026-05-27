@@ -12,7 +12,6 @@ app.use(express.json());
 
 const SECRET = 'trace_secret_key';
 
-// Отдаём HTML файлы
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -21,10 +20,8 @@ app.get('/:page', (req, res) => {
     res.sendFile(path.join(__dirname, page));
 });
 
-// Загруженные файлы
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// База данных
 const db = mysql.createPool({
     host: 'kodama.proxy.rlwy.net',
     port: 59943,
@@ -40,16 +37,11 @@ db.query('SELECT 1', () => console.log('MySQL подключён!'));
 // Регистрация
 app.post('/api/register', async (req, res) => {
     const { name, email, password, role } = req.body;
-    console.log('Регистрация:', email);
     const hash = await bcrypt.hash(password, 10);
     db.query('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
         [name, email, hash, role || 'client'],
         (err, result) => {
-            if (err) {
-                console.log('Ошибка БД:', err.message);
-                return res.status(400).json({ error: 'Email уже занят' });
-            }
-            console.log('Записано в БД:', result.insertId);
+            if (err) return res.status(400).json({ error: 'Email уже занят' });
             res.json({ success: true });
         }
     );
@@ -68,34 +60,50 @@ app.post('/api/login', (req, res) => {
     });
 });
 
-// Отправка заявки
+// Отправка заявки — назначает случайного дизайнера
 app.post('/api/applications', (req, res) => {
     const { name, phone, area, type, client_id } = req.body;
-    db.query('INSERT INTO applications (name, phone, area, type, client_id) VALUES (?, ?, ?, ?, ?)',
-        [name, phone, area, type, client_id],
-        (err) => {
-            if (err) return res.status(500).json({ error: 'Ошибка' });
-            res.json({ success: true });
-        }
-    );
+    db.query("SELECT id FROM users WHERE role = 'manager' AND email != 'veronika@trace.ru'", (err, managers) => {
+        if (err || managers.length === 0) return res.status(500).json({ error: 'Нет дизайнеров' });
+        const randomManager = managers[Math.floor(Math.random() * managers.length)];
+        db.query('INSERT INTO applications (name, phone, area, type, client_id, manager_id) VALUES (?, ?, ?, ?, ?, ?)',
+            [name, phone, area, type, client_id, randomManager.id],
+            (err) => {
+                if (err) return res.status(500).json({ error: 'Ошибка' });
+                res.json({ success: true, manager_id: randomManager.id });
+            }
+        );
+    });
 });
 
-// Загрузка файлов через Cloudinary
+// Получить заявки
+app.get('/api/applications', (req, res) => {
+    const { manager_id, role } = req.query;
+    let query, params;
+    if (role === 'director') {
+        query = 'SELECT * FROM applications ORDER BY created_at DESC';
+        params = [];
+    } else {
+        query = 'SELECT * FROM applications WHERE manager_id = ? ORDER BY created_at DESC';
+        params = [manager_id];
+    }
+    db.query(query, params, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Ошибка' });
+        res.json(results);
+    });
+});
+
+// Cloudinary
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
-
 cloudinary.config({
     cloud_name: 'dfixnp8vd',
     api_key: '563333494145371',
     api_secret: 'X3rNmL584M8qgcmMJndWbWmVP2g'
 });
-
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
-    params: {
-        folder: 'trace-uploads',
-        resource_type: 'auto'
-    }
+    params: { folder: 'trace-uploads', resource_type: 'auto' }
 });
 const upload = multer({ storage });
 
@@ -111,18 +119,9 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
     );
 });
 
-// Получить заявки (для менеджера)
-app.get('/api/applications', (req, res) => {
-    db.query('SELECT * FROM applications ORDER BY created_at DESC', (err, results) => {
-        if (err) return res.status(500).json({ error: 'Ошибка' });
-        res.json(results);
-    });
-});
-
 // Получить файлы
 app.get('/api/files', (req, res) => {
-    const client_id = req.query.client_id;
-    const role = req.query.role;
+    const { client_id, role } = req.query;
     let query = 'SELECT * FROM files ORDER BY created_at DESC';
     let params = [];
     if (role !== 'manager') {
@@ -135,30 +134,22 @@ app.get('/api/files', (req, res) => {
     });
 });
 
-// Создать проект — назначает случайного дизайнера
+// Создать проект — назначает того же дизайнера что получил заявку
 app.post('/api/projects', (req, res) => {
-    const { client_id, type, area, budget } = req.body;
-
-    db.query("SELECT id FROM users WHERE role = 'manager' AND email != 'veronika@trace.ru'", (err, managers) => {
-        if (err || managers.length === 0) return res.status(500).json({ error: 'Нет дизайнеров' });
-
-        const randomManager = managers[Math.floor(Math.random() * managers.length)];
-
-        db.query('INSERT INTO projects (client_id, manager_id, type, area, budget) VALUES (?, ?, ?, ?, ?)',
-            [client_id, randomManager.id, type, area, budget],
-            (err, result) => {
-                if (err) return res.status(500).json({ error: 'Ошибка' });
-                res.json({ success: true, id: result.insertId, manager_id: randomManager.id });
-            }
-        );
-    });
+    const { client_id, type, area, budget, manager_id } = req.body;
+    db.query('INSERT INTO projects (client_id, manager_id, type, area, budget) VALUES (?, ?, ?, ?, ?)',
+        [client_id, manager_id, type, area, budget],
+        (err, result) => {
+            if (err) return res.status(500).json({ error: 'Ошибка' });
+            res.json({ success: true, id: result.insertId });
+        }
+    );
 });
 
 // Получить проекты
 app.get('/api/projects', (req, res) => {
     const { client_id, role, manager_id } = req.query;
     let query, params;
-
     if (role === 'manager' && manager_id) {
         query = 'SELECT * FROM projects WHERE manager_id = ? ORDER BY created_at DESC';
         params = [manager_id];
@@ -169,7 +160,6 @@ app.get('/api/projects', (req, res) => {
         query = 'SELECT * FROM projects WHERE client_id = ? ORDER BY created_at DESC';
         params = [client_id];
     }
-
     db.query(query, params, (err, results) => {
         if (err) return res.status(500).json({ error: 'Ошибка' });
         res.json(results);
@@ -179,25 +169,19 @@ app.get('/api/projects', (req, res) => {
 // Обновить статус проекта
 app.put('/api/projects/:id', (req, res) => {
     const { status } = req.body;
-    db.query('UPDATE projects SET status = ? WHERE id = ?',
-        [status, req.params.id],
-        (err) => {
-            if (err) return res.status(500).json({ error: 'Ошибка' });
-            res.json({ success: true });
-        }
-    );
+    db.query('UPDATE projects SET status = ? WHERE id = ?', [status, req.params.id], (err) => {
+        if (err) return res.status(500).json({ error: 'Ошибка' });
+        res.json({ success: true });
+    });
 });
 
 // Оплатить проект
 app.put('/api/projects/:id/pay', (req, res) => {
     const { paid } = req.body;
-    db.query('UPDATE projects SET paid = ? WHERE id = ?',
-        [paid, req.params.id],
-        (err) => {
-            if (err) return res.status(500).json({ error: 'Ошибка' });
-            res.json({ success: true });
-        }
-    );
+    db.query('UPDATE projects SET paid = ? WHERE id = ?', [paid, req.params.id], (err) => {
+        if (err) return res.status(500).json({ error: 'Ошибка' });
+        res.json({ success: true });
+    });
 });
 
 app.listen(3000, () => {
