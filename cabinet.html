@@ -269,7 +269,7 @@
         async function renderManagerPanel() {
             const appsRes = await fetch(`${API}/api/applications`);
             const apps = await appsRes.json();
-            const projRes = await fetch(`${API}/api/projects?role=manager`);
+            const projRes = await fetch(`${API}/api/projects?role=manager&manager_id=${currentUser.id}`);
             const projects = await projRes.json();
             const filesRes = await fetch(`${API}/api/files?role=manager`);
             const files = await filesRes.json();
