@@ -135,6 +135,45 @@ app.get('/api/files', (req, res) => {
     });
 });
 
+// Создать проект
+app.post('/api/projects', (req, res) => {
+    const { client_id, type, area, budget } = req.body;
+    db.query('INSERT INTO projects (client_id, type, area, budget) VALUES (?, ?, ?, ?)',
+        [client_id, type, area, budget],
+        (err, result) => {
+            if (err) return res.status(500).json({ error: 'Ошибка' });
+            res.json({ success: true, id: result.insertId });
+        }
+    );
+});
+
+// Получить проекты клиента
+app.get('/api/projects', (req, res) => {
+    const { client_id, role } = req.query;
+    let query = 'SELECT * FROM projects ORDER BY created_at DESC';
+    let params = [];
+    if (role !== 'manager') {
+        query = 'SELECT * FROM projects WHERE client_id = ? ORDER BY created_at DESC';
+        params = [client_id];
+    }
+    db.query(query, params, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Ошибка' });
+        res.json(results);
+    });
+});
+
+// Обновить статус проекта (для менеджера)
+app.put('/api/projects/:id', (req, res) => {
+    const { status } = req.body;
+    db.query('UPDATE projects SET status = ? WHERE id = ?',
+        [status, req.params.id],
+        (err) => {
+            if (err) return res.status(500).json({ error: 'Ошибка' });
+            res.json({ success: true });
+        }
+    );
+});
+
 app.listen(3000, () => {
     console.log('Сервер запущен на http://localhost:3000');
 });
