@@ -19,10 +19,10 @@
             <a href="index.html" class="text-3xl tracking-widest font-serif">TRACE</a>
             <nav class="hidden md:flex items-center gap-10 text-sm uppercase tracking-widest">
                 <a href="index.html" class="hover:text-[#A68A64] transition">Главная</a>
-                <a href="About.html" class="hover:text-[#A68A64] transition">О нас</a>
-                <a href="Portfolio.html" class="hover:text-[#A68A64] transition">Портфолио</a>
+                <a href="about.html" class="hover:text-[#A68A64] transition">О нас</a>
+                <a href="portfolio.html" class="hover:text-[#A68A64] transition">Портфолио</a>
                 <a href="news.html" class="hover:text-[#A68A64] transition">Новости</a>
-                <a href="Cabinet.html" class="hover:text-[#A68A64] transition">Кабинет</a>
+                <a href="cabinet.html" class="hover:text-[#A68A64] transition">Кабинет</a>
                 <a href="services.html" class="hover:text-[#A68A64] transition">Услуги</a>
                 <button onclick="openContactModal()" class="bg-[#3F2A1E] text-white px-8 py-3.5 text-xs tracking-widest hover:bg-[#A68A64] transition">НАПИСАТЬ НАМ</button>
             </nav>
@@ -31,7 +31,6 @@
 
     <div class="pt-28 pb-16 tail-container px-6 min-h-screen">
 
-        <!-- Форма входа/регистрации -->
         <div id="auth-section">
             <div class="max-w-md mx-auto bg-white shadow-md rounded-3xl p-10">
                 <h1 class="text-4xl hero-font mb-2 text-center">Личный кабинет</h1>
@@ -58,7 +57,6 @@
             </div>
         </div>
 
-        <!-- Кабинет -->
         <div id="cabinet-content" class="hidden">
             <div class="flex justify-between items-end mb-8">
                 <div>
@@ -88,7 +86,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно заявки -->
     <div id="contactModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-[100]">
         <div class="bg-white max-w-lg w-full mx-4 p-10 rounded-3xl relative">
             <h3 class="text-3xl hero-font mb-8">Расскажите о вашем проекте</h3>
@@ -125,7 +122,6 @@
             const email = document.getElementById('reg-email').value.trim();
             const password = document.getElementById('reg-password').value.trim();
             if (!name || !email || !password) return alert('Заполните все поля');
-
             const res = await fetch(`${API}/api/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -140,7 +136,6 @@
         async function login() {
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value.trim();
-
             const res = await fetch(`${API}/api/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -148,7 +143,6 @@
             });
             const data = await res.json();
             if (data.error) return alert(data.error);
-
             currentUser = { token: data.token, role: data.role, name: data.name, id: data.id };
             localStorage.setItem('traceCurrentUser', JSON.stringify(currentUser));
             showCabinet();
@@ -165,9 +159,7 @@
             document.getElementById('auth-section').classList.add('hidden');
             document.getElementById('cabinet-content').classList.remove('hidden');
             document.getElementById('user-name').textContent = currentUser.name.split(' ')[0];
-
             const badge = document.getElementById('user-role-badge');
-
             if (currentUser.role === 'manager') {
                 badge.textContent = '👔 Панель менеджера';
                 document.getElementById('projects-title').textContent = 'Заявки клиентов';
@@ -179,15 +171,12 @@
             }
         }
 
-        // Кабинет менеджера
         async function renderManagerPanel() {
             const appsRes = await fetch(`${API}/api/applications`);
             const apps = await appsRes.json();
-
             const filesRes = await fetch(`${API}/api/files?role=manager`);
             const files = await filesRes.json();
 
-            // Заявки
             const projectsList = document.getElementById('projects-list');
             if (apps.length === 0) {
                 projectsList.innerHTML = '<p class="text-gray-400 text-center py-6">Заявок пока нет</p>';
@@ -202,7 +191,6 @@
                 `).join('');
             }
 
-            // Файлы клиентов
             const docsContainer = document.getElementById('documents-list');
             const noDoc = document.getElementById('no-documents');
             if (files.length === 0) {
@@ -213,7 +201,7 @@
                 docsContainer.innerHTML = files.map(f => `
                     <div class="bg-[#F5F0E8] p-3 rounded-xl flex justify-between items-center text-xs">
                         <div><p class="font-medium">${f.filename}</p></div>
-                        <a href="${API}${f.filepath}" target="_blank">
+                        <a href="${f.filepath}" target="_blank">
                             <i class="fa-solid fa-download text-[#A68A64] cursor-pointer"></i>
                         </a>
                     </div>
@@ -221,13 +209,11 @@
             }
         }
 
-        // Кабинет клиента - документы
         async function renderDocuments() {
-    const res = await fetch(`${API}/api/files?client_id=${currentUser.id}&role=${currentUser.role}`);
+            const res = await fetch(`${API}/api/files?client_id=${currentUser.id}&role=${currentUser.role}`);
             const files = await res.json();
             const container = document.getElementById('documents-list');
             const noDoc = document.getElementById('no-documents');
-
             if (files.length === 0) {
                 noDoc.classList.remove('hidden');
                 container.innerHTML = '';
@@ -236,7 +222,7 @@
                 container.innerHTML = files.map(f => `
                     <div class="bg-[#F5F0E8] p-3 rounded-xl flex justify-between items-center text-xs">
                         <div><p class="font-medium">${f.filename}</p></div>
-                        <a href="${API}${f.filepath}" target="_blank">
+                        <a href="${f.filepath}" target="_blank">
                             <i class="fa-solid fa-download text-[#A68A64] cursor-pointer"></i>
                         </a>
                     </div>
@@ -252,7 +238,6 @@
                 const formData = new FormData();
                 formData.append('file', file);
                 formData.append('client_id', currentUser.id || 1);
-
                 const res = await fetch(`${API}/api/upload`, {
                     method: 'POST',
                     body: formData
@@ -272,7 +257,6 @@
         async function submitApplication(e) {
             e.preventDefault();
             if (!currentUser) return alert('Сначала войдите в аккаунт!');
-
             const res = await fetch(`${API}/api/applications`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
